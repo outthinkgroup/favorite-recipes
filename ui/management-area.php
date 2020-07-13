@@ -39,15 +39,8 @@ function my_favorites_endpoint_content(){
             <?php
           foreach($lists as $list) { ?>
             <li class="list-item" data-list-id="<?php echo $list->ID; ?>">
-              <div class="recipe-title">
-                <span class="count"><?php show_count($list->ID); ?></span>
-                <a href="<?php echo get_the_permalink($list->ID); ?>">
-                  <?php echo $list->post_title; ?> 
-                </a>
-              </div>
-               <button type="button" class="rename-button">Rename</button>
-               <button type="button" class="delete-button">Delete</button>
-               <small></small>
+              <?php show_list_title_and_count($list); ?>
+              <?php show_list_actions($list); ?> 
             </li>
           <?php } ?>
           </ul>
@@ -66,18 +59,44 @@ function my_favorites_endpoint_content(){
     <?php
     foreach ($recipes as $recipe) { ?>
       <li>
-        <?php echo $recipe->post_title; ?> <button type="button" class="add_item" data-recipe-id="<?php echo $recipe->ID; ?>">Add</button>
+        <?php echo $recipe->post_title; ?> 
+        <?php add_recipe_button($recipe->ID); ?>
       </li>
     <?php
     }
     ?>
     </ul>
-    <div class="tst-area">
-     
-    </div>
+    
   </div>
 <?php }
 
+
+
+
+
+/* 
+helpers and html components
+*/
+
+function show_list_title_and_count($list){
+  ?>
+    <div class="recipe-title">
+      <span class="count"><?php show_count($list->ID); ?></span>
+      <a href="<?php echo get_the_permalink($list->ID); ?>">
+        <?php echo $list->post_title; ?> 
+      </a>
+    </div>
+  <?php
+}
+function show_list_actions(){
+  ?>
+  <div class="list-actions">
+    <button type="button " class="primary view-list">View List</button>
+    <button type="button " class="edit rename-button">Rename</button>
+    <button type="button " class="danger delete-button">Delete</button>
+  </div>
+  <?php
+}
 function show_count($list_id){
   $list_items = get_post_meta( $list_id, 'list_items', true);
   if(!is_array($list_items)){
@@ -85,4 +104,14 @@ function show_count($list_id){
   } else {
     echo count($list_items);
   }
+}
+
+function add_recipe_button($recipe_id){
+  global $post;
+  if($recipe_id === null){
+    $recipe_id = $post->ID;
+  }
+  ?>
+    <button type="button" class="add_item" data-recipe-id="<?php echo $recipe->ID; ?>">Add</button>
+  <?php
 }

@@ -150,51 +150,90 @@ window.addEventListener("DOMContentLoaded", initManagement);
 function initManagement() {
   if (!document.querySelector(".recipe-list-management-area")) return;
   var addListForm = document.querySelector("#add-list");
-  addListForm.addEventListener("submit", addList);
+  addListForm.addEventListener("submit", handleAddList);
+
+  var allDeleteListBtns = _toConsumableArray(document.querySelectorAll(".delete-button"));
+
+  allDeleteListBtns.forEach(function (btn) {
+    return btn.addEventListener("click", handleDeleteList);
+  });
 
   var allAddItemBtns = _toConsumableArray(document.querySelectorAll(".add_item"));
 
   allAddItemBtns.forEach(function (btn) {
     return btn.addEventListener("click", handleAddRecipe);
   });
-}
+} //?ADD LIST
 
-function addList(e) {
+
+function handleAddList(e) {
   e.preventDefault();
-  var listNameInput = document.querySelector("#new-list");
-  var listName = listNameInput.value;
-  var userId = document.querySelector("[data-user-id]").dataset.userId;
-  var body = JSON.stringify({
-    user_id: userId,
-    title: listName
-  });
-  var response = fetch("".concat(BASE_URL, "/create-list"), _objectSpread({
-    body: body
-  }, OPTIONS)).then(function (res) {
-    return res.json();
-  }).then(function (res) {
+  var listName = getInputValue("#new-list");
+  var userId = getUserId();
+  var response = addList(listName, userId).then(function (res) {
     return console.log(res);
   });
+}
+
+function addList(listName, userId) {
+  var data = {
+    user_id: parseInt(userId),
+    title: listName
+  };
+  return useApi("create-list", data);
+} //?DELETE LIST
+
+
+function handleDeleteList(e) {
+  var listId = e.target.closest(".list-item").dataset.listId;
+  var userId = getUserId();
+  var response = removeList(listId, userId).then(function (res) {
+    return console.log(res);
+  });
+}
+
+function deleteList(listId, userId) {
+  var data = {
+    list_id: parseInt(listId),
+    user_id: parseInt(userId)
+  };
+  return useApi("delete-list", data);
 }
 
 function handleAddRecipe(e) {
   var button = e.target;
   var recipeId = button.dataset.recipeId; //TODO get list id
 
-  var response = addRecipeToList(recipeId);
+  var response = addRecipeToList(recipeId).then(function (res) {
+    return console.log(res);
+  });
 }
 
 function addRecipeToList(recipeId) {
   var listId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8052;
-  var body = JSON.stringify({
+  return useApi("add-item", {
     item_id: parseInt(recipeId),
     list_id: listId
   });
-  return fetch("".concat(BASE_URL, "/add-item"), _objectSpread(_objectSpread({}, OPTIONS), {}, {
+}
+
+function useApi(endpoint, data) {
+  var body = JSON.stringify(data);
+  return fetch("".concat(BASE_URL, "/").concat(endpoint), _objectSpread(_objectSpread({}, OPTIONS), {}, {
     body: body
   })).then(function (res) {
     return res.json();
   });
+}
+
+function getInputValue(selector) {
+  var el = document.querySelector(selector);
+  var value = el.value;
+  return value;
+}
+
+function getUserId() {
+  return document.querySelector("[data-user-id]").dataset.userId;
 }
 },{}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;

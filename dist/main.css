@@ -9,6 +9,7 @@
   background: white;
   display: flex;
   border-bottom: 1px solid #f0f0f0;
+  justify-content: space-between;
 }
 
 .list-item button {

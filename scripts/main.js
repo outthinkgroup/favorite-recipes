@@ -13,41 +13,63 @@ function initManagement() {
   if (!document.querySelector(".recipe-list-management-area")) return;
 
   const addListForm = document.querySelector("#add-list");
-  addListForm.addEventListener("submit", addList);
+  addListForm.addEventListener("submit", handleAddList);
+
+  const allDeleteListBtns = [...document.querySelectorAll(".delete-button")];
+  allDeleteListBtns.forEach((btn) =>
+    btn.addEventListener("click", handleDeleteList)
+  );
 
   const allAddItemBtns = [...document.querySelectorAll(".add_item")];
   allAddItemBtns.forEach((btn) =>
     btn.addEventListener("click", handleAddRecipe)
   );
 }
-function addList(e) {
+//?ADD LIST
+function handleAddList(e) {
   e.preventDefault();
-  const listNameInput = document.querySelector("#new-list");
-  const listName = listNameInput.value;
-  const userId = document.querySelector("[data-user-id]").dataset.userId;
-  const body = JSON.stringify({
-    user_id: userId,
-    title: listName,
-  });
-  const response = fetch(`${BASE_URL}/create-list`, {
-    body,
-    ...OPTIONS,
-  })
-    .then((res) => res.json())
-    .then((res) => console.log(res));
+  const listName = getInputValue("#new-list");
+  const userId = getUserId();
+  const response = addList(listName, userId).then((res) => console.log(res));
+}
+function addList(listName, userId) {
+  const data = { user_id: parseInt(userId), title: listName };
+  return useApi("create-list", data);
+}
+
+//?DELETE LIST
+function handleDeleteList(e) {
+  const listId = e.target.closest(".list-item").dataset.listId;
+  const userId = getUserId();
+  const response = removeList(listId, userId).then((res) => console.log(res));
+}
+function deleteList(listId, userId) {
+  const data = { list_id: parseInt(listId), user_id: parseInt(userId) };
+  return useApi("delete-list", data);
 }
 
 function handleAddRecipe(e) {
   const button = e.target;
   const recipeId = button.dataset.recipeId;
   //TODO get list id
-  const response = addRecipeToList(recipeId);
+  const response = addRecipeToList(recipeId).then((res) => console.log(res));
+}
+function addRecipeToList(recipeId, listId = 8052) {
+  return useApi("add-item", { item_id: parseInt(recipeId), list_id: listId });
 }
 
-function addRecipeToList(recipeId, listId = 8052) {
-  const body = JSON.stringify({ item_id: parseInt(recipeId), list_id: listId });
-  return fetch(`${BASE_URL}/add-item`, {
+function useApi(endpoint, data) {
+  const body = JSON.stringify(data);
+  return fetch(`${BASE_URL}/${endpoint}`, {
     ...OPTIONS,
     body,
   }).then((res) => res.json());
+}
+function getInputValue(selector) {
+  const el = document.querySelector(selector);
+  const value = el.value;
+  return value;
+}
+function getUserId() {
+  return document.querySelector("[data-user-id]").dataset.userId;
 }
