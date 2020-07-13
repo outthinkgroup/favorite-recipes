@@ -148,7 +148,6 @@ function addList(e) {
   }).then(function (res) {
     return console.log(res);
   });
-  console.log(body);
 }
 },{}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
