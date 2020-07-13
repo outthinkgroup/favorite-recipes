@@ -56,7 +56,26 @@ function my_favorites_endpoint_content(){
         <button type="submit">Add</button>
       </form>
     </div>
-    <p>JUST FOR DEBUGGING</p>
-    <button>add post to a list</button>
+    <div class="tst-area">
+      <p>JUST FOR DEBUGGING</p>
+    <button class="add-recipe-to-list" data-recipe-id="" >add post to a list</button>
+      <?php 
+        $listargs = array(
+          'post_type' => 'lists',
+          'author' => $user_id
+        );
+          $lists = get_posts('post_type=lists');
+          if (!empty($lists)) { ?>
+            <ul class='my-lists'>
+            <?php
+          foreach($lists as $list) { ?>
+              <li><button><?php echo $list->post_title; ?></button></li>
+          <?php } ?>
+            </ul >
+      <?php  } ?>
+      
+
+    <button >remove post to a list</button>
+    </div>
   </div>
 <?php }
