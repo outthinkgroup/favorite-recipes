@@ -38,8 +38,11 @@ function my_favorites_endpoint_content(){
             <?php
           foreach($lists as $list) { ?>
             <li class="list-item">
+              <a href="<?php echo get_the_permalink($list->ID); ?>">
               <?php echo $list->post_title; ?> 
-               <button type="button" class="delete-button">Delete (-)</button>
+              </a>
+               <button type="button" class="rename-button">Rename</button>
+               <button type="button" class="delete-button">Delete</button>
             </li>
           <?php } ?>
           </ul>
