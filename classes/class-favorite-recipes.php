@@ -10,6 +10,7 @@ if(!class_exists( 'Favorite_Recipes' )) {
     }
     
     public function enqueue_all(){
+      if(!is_account_page()) return;
       wp_enqueue_script('recipe-list-script', FAVORITE_RECIPES_URL . 'dist/main.js', array(), true);
       wp_enqueue_style('recipe-list-styles', FAVORITE_RECIPES_URL . 'dist/main.css', '1.00' , 'all');
 

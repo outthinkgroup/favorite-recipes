@@ -26,11 +26,11 @@ function my_favorites_endpoint_content(){
     data-user-id="<?php echo $user_id; ?>"
   >
     <div class="lists">
-    
+      <h2>My Recipe Lists</h2>
         <?php 
         $listArgs = array(
           'post_type' => 'lists',
-          //'author' => $user_id,
+          'author' => $user_id,
           'posts_per_page' => '-1'
         );
           $lists = get_posts($listArgs);
@@ -39,12 +39,15 @@ function my_favorites_endpoint_content(){
             <?php
           foreach($lists as $list) { ?>
             <li class="list-item" data-list-id="<?php echo $list->ID; ?>">
-              <a href="<?php echo get_the_permalink($list->ID); ?>">
-              <?php echo $list->post_title; ?> 
-              </a>
+              <div class="recipe-title">
+                <span class="count"><?php show_count($list->ID); ?></span>
+                <a href="<?php echo get_the_permalink($list->ID); ?>">
+                  <?php echo $list->post_title; ?> 
+                </a>
+              </div>
                <button type="button" class="rename-button">Rename</button>
                <button type="button" class="delete-button">Delete</button>
-               <small><?php var_dump(get_post_meta( $list->ID, 'list_items', true)); ?></small>
+               <small></small>
             </li>
           <?php } ?>
           </ul>
@@ -74,3 +77,12 @@ function my_favorites_endpoint_content(){
     </div>
   </div>
 <?php }
+
+function show_count($list_id){
+  $list_items = get_post_meta( $list_id, 'list_items', true);
+  if(!is_array($list_items)){
+    echo 0;
+  } else {
+    echo count($list_items);
+  }
+}
