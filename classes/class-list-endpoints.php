@@ -65,11 +65,12 @@ class List_Endpoints {
         'post_title' => $data->title,
         'post_author' => $data->user_id,
         'post_status' => 'publish',
-        'post_content' => ''
+        'post_content' => '',
+        'post_type' => 'lists',
     );
     $result = wp_insert_post($new_list_array);
     //$title = get_the_title($result);
-    
+    var_dump($data);
     $response = new WP_REST_Response($result);
     $response->set_status(200);
       return $response;
@@ -118,6 +119,6 @@ class List_Endpoints {
   function get_json(){
     $json = file_get_contents('php://input');
     $data = json_decode($json);
-    return $json;
+    return $data;
   }
 }
