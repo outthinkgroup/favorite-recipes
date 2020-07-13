@@ -32,12 +32,12 @@ function my_favorites_endpoint_content(){
           'post_type' => 'lists',
           'author' => $user_id
         );
-          $lists = get_posts('post_type=lists');
+          $lists = get_posts($user_id);
           if (!empty($lists)) { ?>
             <ul class='my-lists'>
             <?php
           foreach($lists as $list) { ?>
-            <li class="list-item">
+            <li class="list-item" data-list-id="<?php echo $list->ID; ?>">
               <a href="<?php echo get_the_permalink($list->ID); ?>">
               <?php echo $list->post_title; ?> 
               </a>
