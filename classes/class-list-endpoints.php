@@ -59,7 +59,7 @@ class List_Endpoints {
     ));
   }
 
-  static function create_list() {
+ function create_list() {
     $data = List_Endpoints::get_json();
     $new_list_array = array(
         'post_title' => $data->title,
@@ -94,12 +94,37 @@ class List_Endpoints {
 
   }
   static function remove_item(){
-
+    // Check if in array.
+    // get key of array if so
+    // pluck array
+    // save array.
   }
   static function add_item(){
-
+    $data = List_Endpoints::get_json();
+    $item_id = $data->item_id;
+    $list_id = $data->list_id;
+    $meta_key = 'list_items';
+    $list_items = get_post_meta( $list_id, $meta_key, true);
+    if (empty($list_items)) {
+      $list_items = array();
+    }
+    // if (!in_array($item_id, $list_items)) {
+       $list_items[] = $item_id;
+    // }
+    //unset($list_items);
+    //$list_items = '';
+    if (update_post_meta( $list_id, $meta_key, $list_items)) {
+      $response = new WP_REST_Response(true);
+      $response->set_status(200);
+      return $response;
+    } else {
+      $response = new WP_REST_Response(false);
+      $response->set_status(400);
+      return $response;
+    } 
   }
-  function post_error_reporter($id) {
+  function post_error_reporter($id, $data) {
+    $return_arr = array();
     if (is_wp_error($post_id)) {
         $errors = $post_id->get_error_messages();
         $error = 'There has been an error --';
@@ -107,16 +132,19 @@ class List_Endpoints {
           // not sure of my syntax here.
             $error .= $error;
         }
+        $return_arr['error'] = $error;
         $response = new WP_REST_Response($error);
 	      $response->set_status(400);
         return $response;
     } else {
+      // 1:43 PM - working on building [data] array.
+      //$return_arr
         $response = new WP_REST_Response($id);
-	    $response->set_status(200);
+	      $response->set_status(200);
         return $response;
     }
   }
-  function get_json(){
+  static function get_json(){
     $json = file_get_contents('php://input');
     $data = json_decode($json);
     return $data;

@@ -118,13 +118,45 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"scripts/main.js":[function(require,module,exports) {
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 //main.js
+var BASE_URL = "/wp-json/recipe-list/v1";
+var OPTIONS = {
+  method: "POST",
+  credentials: "same-origin",
+  headers: {
+    "Content-Type": "application/json"
+  }
+};
 window.addEventListener("DOMContentLoaded", initManagement);
 
 function initManagement() {
   if (!document.querySelector(".recipe-list-management-area")) return;
   var addListForm = document.querySelector("#add-list");
   addListForm.addEventListener("submit", addList);
+
+  var allAddItemBtns = _toConsumableArray(document.querySelectorAll(".add_item"));
+
+  allAddItemBtns.forEach(function (btn) {
+    return btn.addEventListener("click", handleAddRecipe);
+  });
 }
 
 function addList(e) {
@@ -136,18 +168,31 @@ function addList(e) {
     user_id: userId,
     title: listName
   });
-  var response = fetch("https://nicolehunn.local/wp-json/recipe-list/v1/create-list", {
-    method: "POST",
-    body: body,
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json"
-    }
+  var response = fetch("".concat(BASE_URL, "/create-list"), {
+    body: body
   }).then(function (res) {
     return res.json();
   }).then(function (res) {
     return console.log(res);
   });
+}
+
+function handleAddRecipe(e) {
+  var button = e.target;
+  var recipeId = button.dataset.recipeId; //TODO get list id
+
+  var response = addRecipeToList(recipeId);
+}
+
+function addRecipeToList(recipeId) {
+  var listId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8052;
+  var body = JSON.stringify({
+    item_id: parseInt(recipeId),
+    list_id: listId
+  });
+  return fetch("".concat(BASE_URL, "/add-item"), _objectSpread(_objectSpread({}, OPTIONS), {}, {
+    body: body
+  }));
 }
 },{}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;

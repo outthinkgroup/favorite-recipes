@@ -28,11 +28,12 @@ function my_favorites_endpoint_content(){
     <div class="lists">
     
         <?php 
-        $listargs = array(
+        $listArgs = array(
           'post_type' => 'lists',
-          'author' => $user_id
+          //'author' => $user_id,
+          'posts_per_page' => '-1'
         );
-          $lists = get_posts($user_id);
+          $lists = get_posts($listArgs);
           if (!empty($lists)) { ?>
             <ul class='my-lists'>
             <?php
@@ -43,6 +44,7 @@ function my_favorites_endpoint_content(){
               </a>
                <button type="button" class="rename-button">Rename</button>
                <button type="button" class="delete-button">Delete</button>
+               <small><?php var_dump(get_post_meta( $list->ID, 'list_items', true)); ?></small>
             </li>
           <?php } ?>
           </ul>
@@ -56,26 +58,19 @@ function my_favorites_endpoint_content(){
         <button type="submit">Add</button>
       </form>
     </div>
+    <?php $recipes = get_posts('post_type=recipe&posts_per_page=-1'); ?>
+    <ul class="lists">
+    <?php
+    foreach ($recipes as $recipe) { ?>
+      <li>
+        <?php echo $recipe->post_title; ?> <button type="button" class="add_item" data-recipe-id="<?php echo $recipe->ID; ?>">Add</button>
+      </li>
+    <?php
+    }
+    ?>
+    </ul>
     <div class="tst-area">
-      <p>JUST FOR DEBUGGING</p>
-    <button class="add-recipe-to-list" data-recipe-id="" >add post to a list</button>
-      <?php 
-        $listargs = array(
-          'post_type' => 'lists',
-          'author' => $user_id
-        );
-          $lists = get_posts('post_type=lists');
-          if (!empty($lists)) { ?>
-            <ul class='my-lists'>
-            <?php
-          foreach($lists as $list) { ?>
-              <li><button><?php echo $list->post_title; ?></button></li>
-          <?php } ?>
-            </ul >
-      <?php  } ?>
-      
-
-    <button >remove post to a list</button>
+     
     </div>
   </div>
 <?php }
