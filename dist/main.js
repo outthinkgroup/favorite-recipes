@@ -168,9 +168,9 @@ function addList(e) {
     user_id: userId,
     title: listName
   });
-  var response = fetch("".concat(BASE_URL, "/create-list"), {
+  var response = fetch("".concat(BASE_URL, "/create-list"), _objectSpread({
     body: body
-  }).then(function (res) {
+  }, OPTIONS)).then(function (res) {
     return res.json();
   }).then(function (res) {
     return console.log(res);
@@ -192,7 +192,9 @@ function addRecipeToList(recipeId) {
   });
   return fetch("".concat(BASE_URL, "/add-item"), _objectSpread(_objectSpread({}, OPTIONS), {}, {
     body: body
-  }));
+  })).then(function (res) {
+    return res.json();
+  });
 }
 },{}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
@@ -300,7 +302,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52900" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60598" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

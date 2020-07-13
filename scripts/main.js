@@ -31,6 +31,7 @@ function addList(e) {
   });
   const response = fetch(`${BASE_URL}/create-list`, {
     body,
+    ...OPTIONS,
   })
     .then((res) => res.json())
     .then((res) => console.log(res));
@@ -48,5 +49,5 @@ function addRecipeToList(recipeId, listId = 8052) {
   return fetch(`${BASE_URL}/add-item`, {
     ...OPTIONS,
     body,
-  });
+  }).then((res) => res.json());
 }
