@@ -1,7 +1,7 @@
 <?php
 function add_favorites_menu_item( $current_menu_items ) {
   $current_menu_items = array_slice( $current_menu_items, 0, 4, true ) 
-  + array( 'favorites' => 'My Recipe Lists' )
+  + array( 'my-favorites' => 'My Recipe Lists' )
   + array_slice( $current_menu_items, 4, NULL, true );
   return $current_menu_items;
 
@@ -13,12 +13,47 @@ add_filter( 'woocommerce_account_menu_items', 'add_favorites_menu_item', 10, 1 )
  * Add endpoint
  */
 function add_favorite_endpoint_to_members_area() {
-  add_rewrite_endpoint( 'favorites', EP_PAGES );
+  add_rewrite_endpoint( 'my-favorites', EP_PAGES );
 }
 add_action( 'init', 'add_favorite_endpoint_to_members_area' );
 
 
-add_action( 'woocommerce_account_favorites_endpoint', 'favorites_endpoint_content');
-function favorites_endpoint_content(){ ?>
-  <h1>Hello World</h1>
+add_action( 'woocommerce_account_my-favorites_endpoint', 'my_favorites_endpoint_content');
+function my_favorites_endpoint_content(){
+  $user_id = get_current_user_id();
+  ?>
+  <div class="recipe-list-management-area"
+    data-user-id="<?php echo $user_id; ?>"
+  >
+    <div class="lists">
+    
+        <?php 
+        $listargs = array(
+          'post_type' => 'lists',
+          'author' => $user_id
+        );
+          $lists = get_posts('post_type=lists');
+          if (!empty($lists)) { ?>
+            <ul class='my-lists'>
+            <?php
+          foreach($lists as $list) { ?>
+            <li class="list-item">
+              <?php echo $list->post_title; ?> 
+               <button type="button" class="delete-button">Delete (-)</button>
+            </li>
+          <?php } ?>
+          </ul>
+        <?php 
+          }
+        ?>
+    
+      <form id="add-list">
+        <label for="new-list">Add a List</label>
+        <input type="text" name="new-list" id="new-list">
+        <button type="submit">Add</button>
+      </form>
+    </div>
+    <p>JUST FOR DEBUGGING</p>
+    <button>add post to a list</button>
+  </div>
 <?php }

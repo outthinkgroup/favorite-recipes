@@ -119,6 +119,37 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   return newRequire;
 })({"scripts/main.js":[function(require,module,exports) {
 //main.js
+window.addEventListener("DOMContentLoaded", initManagement);
+
+function initManagement() {
+  if (!document.querySelector(".recipe-list-management-area")) return;
+  var addListForm = document.querySelector("#add-list");
+  addListForm.addEventListener("submit", addList);
+}
+
+function addList(e) {
+  e.preventDefault();
+  var listNameInput = document.querySelector("#new-list");
+  var listName = listNameInput.value;
+  var userId = document.querySelector("[data-user-id]").dataset.userId;
+  var body = JSON.stringify({
+    user_id: userId,
+    title: listName
+  });
+  var response = fetch("https://nicolehunn.local/wp-json/recipe-list/v1/create-list", {
+    method: "POST",
+    body: body,
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (res) {
+    return console.log(res);
+  });
+  console.log(body);
+}
 },{}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 

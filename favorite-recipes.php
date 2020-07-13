@@ -11,6 +11,4 @@
 define('FAVORITE_RECIPES_PATH', plugin_dir_path(__FILE__));
 define('FAVORITE_RECIPES_URL', plugin_dir_url(__FILE__));
 
- add_action('init', function(){
-   require FAVORITE_RECIPES_PATH . '/classes/class-favorite-recipes.php';
- });
+require FAVORITE_RECIPES_PATH . 'classes/class-favorite-recipes.php';
