@@ -1,1 +1,1 @@
-{"version":3,"sources":[],"names":[],"mappings":"","file":"main.css","sourceRoot":".."}
+{"version":3,"sources":["styles/main.scss"],"names":[],"mappings":"AACA;EACI;EACA;EACA","file":"main.css","sourceRoot":"..","sourcesContent":["//main.scss\n.list-item button {\n    padding: 6px 15px;\n    font-size: 12px;\n    font-weight: bold;\n}\n"]}
