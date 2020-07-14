@@ -4,12 +4,19 @@
   margin: 0;
 }
 
-.list-item {
+li.list-item {
   padding: 10px;
   background: white;
   display: flex;
   border-bottom: 1px solid #f0f0f0;
   justify-content: space-between;
+}
+li.list-item:nth-child(even) {
+  background: #0fa3b10d;
+}
+li.list-item img.small-post-thumbnail {
+  width: 36px;
+  border-radius: 100%;
 }
 
 .list-item button {

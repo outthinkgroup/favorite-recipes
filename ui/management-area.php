@@ -60,7 +60,10 @@ function my_favorites_endpoint_content(){
     <?php
     foreach ($recipes as $recipe) { ?>
       <li class="list-item">
+        <a href="<?php echo get_permalink($recipe->ID); ?>">
+      <?php echo get_the_post_thumbnail( $recipe->ID, 'thumbnail', array('class' => 'small-post-thumbnail') ); ?>
         <?php echo $recipe->post_title; ?> 
+    </a>
         <div class="list-actions">
           <?php add_recipe_button($recipe->ID); ?>
           <?php delete_recipe_button($recipe->ID); ?>
@@ -106,11 +109,14 @@ function get_list_items($list_id) {
   return get_post_meta( $list_id, 'list_items', true);
 }
 function show_count($list_id){
+  echo get_count($list_id);
+}
+function get_count($list_id){
   $list_items = get_list_items( $list_id );
   if(!is_array($list_items)){
-    echo 0;
+    return 0;
   } else {
-    echo count($list_items);
+    return count($list_items);
   }
 }
 
@@ -139,9 +145,9 @@ function delete_recipe_button($recipe_id){
 //[show_list_items]
 function show_list_items_func( $atts ) {
   global $post;
-  $list_items = get_post_meta( $post->ID, 'list_items', true);
+  $list_items = get_list_items( $post->ID );
   //var_dump($list_items);
-  if (!empty($list_items)) {
+  if ( ! empty($list_items) ) {
     $recipes = get_posts(array(
       'post_type' => 'recipe',
       'post__in' => $list_items

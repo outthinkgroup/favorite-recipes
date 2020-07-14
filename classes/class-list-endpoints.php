@@ -102,7 +102,25 @@ class List_Endpoints {
 
   }
   static function remove_item(){
+    $data = List_Endpoints::get_json();
+    $item_id = $data->item_id;
+    $list_id = $data->list_id;
+    $list_items = get_list_items( $list_id );
+    $contents = array_search($item_id, $list_items);
+    
+    if ($contents !== false) {
+      unset($list_items[$contents]);
+      update_post_meta( $list_id, 'list_items', $list_items);
+      $response = new WP_REST_Response('List ID:'. $list_id .' updated to remove item '. $item_id);
+      $response->set_status(200);
+      return $response;
 
+    } else {
+      $response = new WP_REST_Response('it did not work');
+      $response->set_status(200);
+      return $response;
+    }
+    //$list_items[] = $item_id;
     // Check if in array.
     // get key of array if so
     // pluck array - need to search
@@ -112,21 +130,30 @@ class List_Endpoints {
     $data = List_Endpoints::get_json();
     $item_id = $data->item_id;
     $list_id = $data->list_id;
-    $meta_key = 'list_items';
-    $list_items = get_post_meta( $list_id, $meta_key, true);
+    $list_items = get_list_items( $list_id );
     if (empty($list_items)) {
       $list_items = array();
     }
-       $list_items[] = $item_id;
+    $list_items[] = $item_id;
     
   //$list_items = '';
-    if (update_post_meta( $list_id, $meta_key, $list_items)) {
-      $response = new WP_REST_Response(true);
+    if (update_post_meta( $list_id, 'list_items', $list_items)) {
+      $responsearr = array(
+        'data' => array(
+          'list_id' => $list_id,
+          'item_id' => $item_id,
+          'list_count' => get_count($list_id)
+        )
+      );
+      $response = new WP_REST_Response($responsearr);
       $response->set_status(200);
       return $response;
     } else {
-      $response = new WP_REST_Response(false);
-      $response->set_status(400);
+      $responsearr = array(
+        'error' => 'The response was '. false . '. Your list items were not saved.'
+      );
+      $response = new WP_REST_Response($responsearr);
+      $response->set_status(500);
       return $response;
     } 
   }
