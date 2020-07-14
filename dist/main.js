@@ -117,12 +117,72 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"scripts/main.js":[function(require,module,exports) {
+})({"scripts/helpers.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.replaceWithForm = replaceWithForm;
+exports.useApi = useApi;
+exports.getInputValue = getInputValue;
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var BASE_URL = "/wp-json/recipe-list/v1";
+var OPTIONS = {
+  method: "POST",
+  credentials: "same-origin",
+  headers: {
+    "Content-Type": "application/json"
+  }
+};
+
+function replaceWithForm(el, callback) {
+  var btnText = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "submit";
+  var replaceParent = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  var form = document.createElement("form");
+  var parent = el.parentElement;
+  form.addEventListener("submit", function (e) {
+    callback(e);
+
+    if (!replaceParent) {
+      form.replaceWith(el);
+    } else {
+      form.replaceWith(parent);
+    }
+  });
+  form.innerHTML = "\n    <input type=\"text\" class=\"small-inline-input\" /> \n    <button type=\"submit\">".concat(btnText, "</button>\n    ");
+
+  if (!replaceParent) {
+    el.replaceWith(form);
+  } else {
+    parent.replaceWith(form);
+  }
+}
+
+function useApi(endpoint, data) {
+  var body = JSON.stringify(data);
+  return fetch("".concat(BASE_URL, "/").concat(endpoint), _objectSpread(_objectSpread({}, OPTIONS), {}, {
+    body: body
+  })).then(function (res) {
+    return res.json();
+  });
+}
+
+function getInputValue(selector) {
+  var el = document.querySelector(selector);
+  var value = el.value;
+  return value;
+}
+},{}],"scripts/main.js":[function(require,module,exports) {
+"use strict";
+
+var _helpers = require("./helpers");
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -136,15 +196,6 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-//main.js
-var BASE_URL = "/wp-json/recipe-list/v1";
-var OPTIONS = {
-  method: "POST",
-  credentials: "same-origin",
-  headers: {
-    "Content-Type": "application/json"
-  }
-};
 window.addEventListener("DOMContentLoaded", initManagement);
 
 function initManagement() {
@@ -175,7 +226,7 @@ function initManagement() {
 
 function handleAddList(e) {
   e.preventDefault();
-  var listName = getInputValue("#new-list");
+  var listName = (0, _helpers.getInputValue)("#new-list");
   var userId = getUserId();
   var response = addList(listName, userId).then(function (res) {
     return console.log(res);
@@ -187,14 +238,14 @@ function addList(listName, userId) {
     user_id: parseInt(userId),
     title: listName
   };
-  return useApi("create-list", data);
+  return (0, _helpers.useApi)("create-list", data);
 } //DELETE LIST
 
 
 function handleDeleteList(e) {
   var listId = e.target.closest(".list-item").dataset.listId;
   var userId = getUserId();
-  var response = removeList(listId, userId).then(function (res) {
+  var response = deleteList(listId, userId).then(function (res) {
     return console.log(res);
   });
 }
@@ -204,12 +255,12 @@ function deleteList(listId, userId) {
     list_id: parseInt(listId),
     user_id: parseInt(userId)
   };
-  return useApi("delete-list", data);
+  return (0, _helpers.useApi)("delete-list", data);
 } //RENAME LIST
 
 
 function handleRenameListBtnClick(e) {
-  replaceWithForm(e.target, function () {
+  (0, _helpers.replaceWithForm)(e.target, function () {
     return console.log("yay");
   }, "rename", true);
 }
@@ -225,54 +276,16 @@ function handleAddRecipe(e) {
 
 function addRecipeToList(recipeId) {
   var listId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8052;
-  return useApi("add-item", {
+  return (0, _helpers.useApi)("add-item", {
     item_id: parseInt(recipeId),
     list_id: listId
   });
 }
 
-function useApi(endpoint, data) {
-  var body = JSON.stringify(data);
-  return fetch("".concat(BASE_URL, "/").concat(endpoint), _objectSpread(_objectSpread({}, OPTIONS), {}, {
-    body: body
-  })).then(function (res) {
-    return res.json();
-  });
-}
-
-function getInputValue(selector) {
-  var el = document.querySelector(selector);
-  var value = el.value;
-  return value;
-}
-
 function getUserId() {
   return document.querySelector("[data-user-id]").dataset.userId;
 }
-
-function replaceWithForm(el, callback) {
-  var btnText = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "submit";
-  var replaceParent = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-  var form = document.createElement("form");
-  var parent = el.parentElement;
-  form.addEventListener("submit", function (e) {
-    callback(e);
-
-    if (!replaceParent) {
-      form.replaceWith(el);
-    } else {
-      form.replaceWith(parent);
-    }
-  });
-  form.innerHTML = "\n    <input type=\"text\" class=\"small-inline-input\" /> \n    <button type=\"submit\">".concat(btnText, "</button>\n    ");
-
-  if (!replaceParent) {
-    el.replaceWith(form);
-  } else {
-    parent.replaceWith(form);
-  }
-}
-},{}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+},{"./helpers":"scripts/helpers.js"}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
 function getBundleURLCached() {

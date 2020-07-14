@@ -1,12 +1,5 @@
-//main.js
-const BASE_URL = "/wp-json/recipe-list/v1";
-const OPTIONS = {
-  method: "POST",
-  credentials: "same-origin",
-  headers: {
-    "Content-Type": "application/json",
-  },
-};
+import { replaceWithForm, useApi, getInputValue } from "./helpers";
+
 window.addEventListener("DOMContentLoaded", initManagement);
 
 function initManagement() {
@@ -48,7 +41,7 @@ function addList(listName, userId) {
 function handleDeleteList(e) {
   const listId = e.target.closest(".list-item").dataset.listId;
   const userId = getUserId();
-  const response = removeList(listId, userId).then((res) => console.log(res));
+  const response = deleteList(listId, userId).then((res) => console.log(res));
 }
 function deleteList(listId, userId) {
   const data = { list_id: parseInt(listId), user_id: parseInt(userId) };
@@ -70,45 +63,6 @@ function addRecipeToList(recipeId, listId = 8052) {
   return useApi("add-item", { item_id: parseInt(recipeId), list_id: listId });
 }
 
-function useApi(endpoint, data) {
-  const body = JSON.stringify(data);
-  return fetch(`${BASE_URL}/${endpoint}`, {
-    ...OPTIONS,
-    body,
-  }).then((res) => res.json());
-}
-function getInputValue(selector) {
-  const el = document.querySelector(selector);
-  const value = el.value;
-  return value;
-}
 function getUserId() {
   return document.querySelector("[data-user-id]").dataset.userId;
-}
-
-function replaceWithForm(
-  el,
-  callback,
-  btnText = "submit",
-  replaceParent = false
-) {
-  const form = document.createElement("form");
-  const parent = el.parentElement;
-  form.addEventListener("submit", (e) => {
-    callback(e);
-    if (!replaceParent) {
-      form.replaceWith(el);
-    } else {
-      form.replaceWith(parent);
-    }
-  });
-  form.innerHTML = `
-    <input type="text" class="small-inline-input" /> 
-    <button type="submit">${btnText}</button>
-    `;
-  if (!replaceParent) {
-    el.replaceWith(form);
-  } else {
-    parent.replaceWith(form);
-  }
 }
