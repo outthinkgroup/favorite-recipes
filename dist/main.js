@@ -163,17 +163,27 @@ function replaceWithForm(_ref) {
       _ref$btnText = _ref.btnText,
       btnText = _ref$btnText === void 0 ? "submit" : _ref$btnText,
       _ref$replaceParent = _ref.replaceParent,
-      replaceParent = _ref$replaceParent === void 0 ? false : _ref$replaceParent;
+      replaceParent = _ref$replaceParent === void 0 ? false : _ref$replaceParent,
+      _ref$changeInnerTextO = _ref.changeInnerTextOfEl,
+      changeInnerTextOfEl = _ref$changeInnerTextO === void 0 ? null : _ref$changeInnerTextO,
+      _ref$waitTillResolve = _ref.waitTillResolve,
+      waitTillResolve = _ref$waitTillResolve === void 0 ? false : _ref$waitTillResolve;
   var form = document.createElement("form");
   form.classList.add("generated-inline");
   var parent = element.parentElement;
   form.addEventListener("submit", function (e) {
-    callback(e);
+    callback(e, parent);
 
     if (!replaceParent) {
       form.replaceWith(element);
     } else {
       form.replaceWith(parent);
+    }
+
+    if (changeInnerTextOfEl) {
+      var newVal = form.querySelector(".small-inline-input").value;
+      console.log(newVal);
+      parent.querySelector(changeInnerTextOfEl).innerText = newVal;
     }
   });
   form.innerHTML = "\n    <input type=\"text\" placeholder=\"".concat(formLabel, "\" class=\"small-inline-input\" /> \n    <button type=\"submit\">").concat(btnText, "</button>\n    ");
@@ -229,14 +239,14 @@ function initManagement() {
   if (!document.querySelector(".recipe-list-management-area")) return;
   var list = document.querySelector(".my-lists");
   addListItemActionHandlers(list);
-  var listBottom = document.querySelector(".list-bottom");
+  var listBottom = document.querySelector(".lists-action");
   addCreateListHandler(listBottom);
 } //HANDLERS AND API CALLS
 
 
 function addCreateListHandler(parent) {
   console.log("object");
-  var showFormBtn = parent.querySelector("[data-action=\"show-create-list\"]");
+  var showFormBtn = parent.querySelector("[data-action='show-create-list']");
   showFormBtn.addEventListener("click", handleShowCreateListForm);
 }
 
@@ -250,7 +260,8 @@ function handleShowCreateListForm(e) {
     callback: callback,
     formLabel: formLabel,
     btnText: btnText,
-    replaceParent: false
+    replaceParent: false,
+    waitTillResolve: true
   });
 } //ADD LIST
 
@@ -262,8 +273,19 @@ function handleAddList(e) {
       listName = _getInputValueByForm.index0;
 
   var userId = getUserId();
-  var response = addList(listName, userId).then(function (res) {
-    return console.log(res);
+  var listParent = document.querySelector(".my-lists");
+  var listItemCopy = listParent.querySelector(".list-item").cloneNode(true);
+  listItemCopy.querySelector(".recipe-title a").innerText = listName;
+  listItemCopy.dataset.state = "loading";
+  listParent.prepend(listItemCopy);
+  addList(listName, userId).then(function (res) {
+    if (res.error) {
+      listItemCopy.dataset.state = "error";
+    } else {
+      var id = res.data.id;
+      listItemCopy.dataset.listId = id;
+      listItemCopy.dataset.state = "idle";
+    }
   });
 }
 
@@ -287,16 +309,26 @@ function addListItemActionHandlers(list) {
       case "delete-list":
         handleDeleteList(item);
         break;
+
+      case "rename-list":
+        handleRenameListBtnClick(item);
     }
   }
 } //DELETE LIST
 
 
 function handleDeleteList(element) {
-  var listId = element.closest(".list-item").dataset.listId;
+  var list = element.closest(".list-item");
+  var listId = list.dataset.listId;
+  var parentElement = list.parentElement;
   var userId = getUserId();
+  list.dataset.state = "loading";
   var response = deleteList(listId, userId).then(function (res) {
-    return console.log(res);
+    if (res.error) {
+      list.dataset.state = "error";
+    } else {
+      parentElement.removeChild(list);
+    }
   });
 }
 
@@ -309,14 +341,38 @@ function deleteList(listId, userId) {
 } //RENAME LIST
 
 
-function handleRenameListBtnClick(e) {
+function handleRenameListBtnClick(element) {
+  var titleEl = element.closest(".list-item").querySelector(".recipe-title a");
   (0, _helpers.replaceWithForm)({
-    element: e.target,
-    callback: function callback() {
-      return console.log("yay");
-    },
+    element: element,
+    callback: handleRenameRecipe,
     btnText: "rename",
-    replaceParent: true
+    replaceParent: true,
+    changeInnerTextOfEl: ".recipe-title a"
+  });
+}
+
+function handleRenameRecipe(e, parent) {
+  e.preventDefault();
+
+  var _getInputValueByForm2 = (0, _helpers.getInputValueByForm)(e.target),
+      title = _getInputValueByForm2.index0;
+
+  var list = e.target.closest(".list-item");
+  var list_id = list.dataset.listId;
+  var titleEl = parent.querySelector("a");
+  list.dataset.state = "loading";
+  (0, _helpers.useApi)("rename-list", {
+    title: title,
+    list_id: list_id
+  }).then(function (res) {
+    if (res.error) {
+      console.log(res.error);
+      list.dataset.state = "error";
+    } else {
+      console.log("ran");
+      list.dataset.state = "idle";
+    }
   });
 }
 
@@ -325,7 +381,7 @@ function handleAddRecipe(e) {
   var recipeId = button.dataset.recipeId; //TODO get list id
 
   var response = addRecipeToList(recipeId).then(function (res) {
-    return console.log(res);
+    console.log(res);
   });
 } // Jul 14, 2020 - Joseph changed this to accommodate his staging area.
 
@@ -447,7 +503,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51419" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58307" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

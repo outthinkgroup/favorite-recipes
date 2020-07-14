@@ -13,16 +13,24 @@ export function replaceWithForm({
   formLabel = null,
   btnText = "submit",
   replaceParent = false,
+  changeInnerTextOfEl = null,
+  waitTillResolve = false,
 }) {
   const form = document.createElement("form");
   form.classList.add("generated-inline");
   const parent = element.parentElement;
   form.addEventListener("submit", (e) => {
-    callback(e);
+    callback(e, parent);
+
     if (!replaceParent) {
       form.replaceWith(element);
     } else {
       form.replaceWith(parent);
+    }
+    if (changeInnerTextOfEl) {
+      const newVal = form.querySelector(".small-inline-input").value;
+      console.log(newVal);
+      parent.querySelector(changeInnerTextOfEl).innerText = newVal;
     }
   });
   form.innerHTML = `

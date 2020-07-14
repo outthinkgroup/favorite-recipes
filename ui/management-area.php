@@ -27,6 +27,7 @@ function my_favorites_endpoint_content(){
   >
     <div class="lists">
       <h2>My Recipe Lists</h2>
+      
         <?php 
         $listArgs = array(
           'post_type' => 'lists',
@@ -34,11 +35,16 @@ function my_favorites_endpoint_content(){
           'posts_per_page' => '-1'
         );
           $lists = get_posts($listArgs);
+
           if (!empty($lists)) { ?>
             <ul class='my-lists'>
             <?php
           foreach($lists as $list) { ?>
-            <li class="list-item" data-list-id="<?php echo $list->ID; ?>">
+            <li 
+              class="list-item" 
+              data-list-id="<?php echo $list->ID; ?>"
+              data-state="idle"
+            >
               <?php show_list_title_and_count($list); ?>
               <?php show_list_actions($list); ?> 
             </li>
@@ -47,8 +53,7 @@ function my_favorites_endpoint_content(){
         <?php 
           }
         ?>
-    
-      <div class="list-bottom">
+        <div class="lists-action">
           <button data-action="show-create-list">Create New List</button>
       </div>
     </div>
@@ -66,7 +71,7 @@ helpers and html components
 
 function show_list_title_and_count($list){
   ?>
-    <div class="recipe-title">
+    <div class="recipe-title" style="--button-color:#efefef">
       <span class="count"><?php show_count($list->ID); ?></span>
       <span>
         <a href="<?php echo get_the_permalink($list->ID); ?>">
@@ -81,7 +86,7 @@ function show_list_title_and_count($list){
 function show_list_actions(){
   ?>
   <div class="list-actions">
-    <button type="button" class="primary view-list">View List</button>
+    <a class="primary button view-list">View List</a>
     <button type="button" data-action="delete-list" class="danger">Delete</button>
   </div>
   <?php

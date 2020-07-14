@@ -70,8 +70,11 @@ class List_Endpoints {
     );
     $result = wp_insert_post($new_list_array);
     //$title = get_the_title($result);
-    var_dump($data);
-    $response = new WP_REST_Response($result);
+    
+    $response = new WP_REST_Response(['data'=>[
+      'title'=>$data->title,
+      'id'  => $result,
+    ]]);
     $response->set_status(200);
       return $response;
     ///post_error_reporter($result);
@@ -81,14 +84,16 @@ class List_Endpoints {
     // Update post 37
     $renamed_list = array(
         'ID'           => $data->list_id,
-        'post_title'   => $data->list_id,
+        'post_title'   => $data->title,
     );
 
     // Update the post into the database
     $result = wp_update_post( $renamed_list );
     // need error reporting.
     //post_error_reporter($result);
-
+    $response = new WP_REST_Response(['data'=> 'TEMPORARY']);
+    $response->set_status(200);
+    return $response;
   }
   static function delete_list(){
     $data = List_Endpoints::get_json();
@@ -99,7 +104,9 @@ class List_Endpoints {
 
     // Update the post into the database
     $result = wp_update_post( $deleted_list );
-
+    $response = new WP_REST_Response(['data'=> 'TEMPORARY']);
+    $response->set_status(200);
+    return $response;
   }
   static function remove_item(){
     $data = List_Endpoints::get_json();
@@ -111,7 +118,7 @@ class List_Endpoints {
     if ($contents !== false) {
       unset($list_items[$contents]);
       update_post_meta( $list_id, 'list_items', $list_items);
-      $response = new WP_REST_Response('List ID:'. $list_id .' updated to remove item '. $item_id);
+      $response = new WP_REST_Response(['data'=>'List ID:'. $list_id .' updated to remove item '. $item_id]);
       $response->set_status(200);
       return $response;
 

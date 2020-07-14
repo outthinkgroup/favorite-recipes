@@ -13,8 +13,19 @@
   justify-content: space-between;
   align-items: center;
 }
+.list-item button {
+  background: transparent;
+  color: #888;
+  fill: currentColor;
+  pointer-events: none;
+  opacity: 0;
+}
+.list-item[data-state=loading] {
+  opacity: 0.75;
+}
 
 .recipe-title {
+  display: flex;
   font-size: 20px;
   font-weight: 600;
 }
@@ -28,6 +39,7 @@
   font-size: 16px;
   display: inline-flex;
   width: 2em;
+  min-width: 2em;
   height: 2em;
   line-height: 0;
   align-items: center;
@@ -38,40 +50,28 @@
   font-weight: bold;
   margin-right: 20px;
 }
-.recipe-title button {
-  background: transparent;
-  color: #888;
-  fill: currentColor;
-  pointer-events: none;
-  opacity: 0;
-}
 
-.list-item:hover .recipe-title button {
-  pointer-events: all;
-  opacity: 1;
-}
-.list-item:hover .recipe-title button:hover {
-  background: #f0f0f0;
-}
-li.list-item:nth-child(even) {
-  background: #0fa3b10d;
-}
-li.list-item img.small-post-thumbnail {
-  width: 36px;
-  border-radius: 100%;
-}
-
-.list-item button {
+.my-lists .list-item button,
+.my-lists .list-item a.button {
   padding: 6px 15px;
   font-size: 12px;
   font-weight: bold;
 }
 
-.list-bottom {
+.list-item:hover button {
+  pointer-events: all;
+  opacity: 1;
+}
+.list-item:hover button:hover {
+  background: #f0f0f0;
+}
+
+.lists-action {
   background: white;
   display: flex;
+  border-bottom: 1px solid #f0f0f0;
 }
-.list-bottom > button {
+.lists-action > button {
   appearance: none;
   width: 100%;
   height: 100%;
@@ -82,18 +82,21 @@ li.list-item img.small-post-thumbnail {
   border-radius: 0px;
   border: none;
 }
-.list-bottom > button:hover {
-  background: #eaeaea;
+.lists-action > button:hover {
+  background: #efefef;
 }
 
 form.generated-inline {
-  display: flex;
+  display: inline-flex;
   width: 100%;
 }
 form.generated-inline input {
   width: 100%;
 }
 form.generated-inline button {
+  opacity: 1;
+  pointer-events: all;
+  background: var(--button-color);
   width: auto;
 }
 
