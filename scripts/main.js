@@ -91,7 +91,8 @@ function handleAddRecipe(e) {
   //TODO get list id
   const response = addRecipeToList(recipeId).then((res) => console.log(res));
 }
-function addRecipeToList(recipeId, listId = 8052) {
+// Jul 14, 2020 - Joseph changed this to accommodate his staging area.
+function addRecipeToList(recipeId, listId = 8045) {
   return useApi("add-item", { item_id: parseInt(recipeId), list_id: listId });
 }
 

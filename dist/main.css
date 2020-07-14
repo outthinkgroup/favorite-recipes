@@ -53,6 +53,13 @@
 .list-item:hover .recipe-title button:hover {
   background: #f0f0f0;
 }
+li.list-item:nth-child(even) {
+  background: #0fa3b10d;
+}
+li.list-item img.small-post-thumbnail {
+  width: 36px;
+  border-radius: 100%;
+}
 
 .list-item button {
   padding: 6px 15px;
