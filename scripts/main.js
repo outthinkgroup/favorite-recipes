@@ -1,12 +1,5 @@
-//main.js
-const BASE_URL = "/wp-json/recipe-list/v1";
-const OPTIONS = {
-  method: "POST",
-  credentials: "same-origin",
-  headers: {
-    "Content-Type": "application/json",
-  },
-};
+import { replaceWithForm, useApi, getInputValue } from "./helpers";
+
 window.addEventListener("DOMContentLoaded", initManagement);
 
 function initManagement() {
@@ -20,12 +13,19 @@ function initManagement() {
     btn.addEventListener("click", handleDeleteList)
   );
 
+  const allRenameListBtns = [...document.querySelectorAll(".rename-button")];
+  allRenameListBtns.forEach((btn) =>
+    btn.addEventListener("click", handleRenameListBtnClick)
+  );
+
   const allAddItemBtns = [...document.querySelectorAll(".add_item")];
   allAddItemBtns.forEach((btn) =>
     btn.addEventListener("click", handleAddRecipe)
   );
 }
-//?ADD LIST
+
+//HANDLERS AND API CALLS
+//ADD LIST
 function handleAddList(e) {
   e.preventDefault();
   const listName = getInputValue("#new-list");
@@ -37,15 +37,20 @@ function addList(listName, userId) {
   return useApi("create-list", data);
 }
 
-//?DELETE LIST
+//DELETE LIST
 function handleDeleteList(e) {
   const listId = e.target.closest(".list-item").dataset.listId;
   const userId = getUserId();
-  const response = removeList(listId, userId).then((res) => console.log(res));
+  const response = deleteList(listId, userId).then((res) => console.log(res));
 }
 function deleteList(listId, userId) {
   const data = { list_id: parseInt(listId), user_id: parseInt(userId) };
   return useApi("delete-list", data);
+}
+
+//RENAME LIST
+function handleRenameListBtnClick(e) {
+  replaceWithForm(e.target, () => console.log("yay"), "rename", true);
 }
 
 function handleAddRecipe(e) {
@@ -59,18 +64,6 @@ function addRecipeToList(recipeId, listId = 8045) {
   return useApi("add-item", { item_id: parseInt(recipeId), list_id: listId });
 }
 
-function useApi(endpoint, data) {
-  const body = JSON.stringify(data);
-  return fetch(`${BASE_URL}/${endpoint}`, {
-    ...OPTIONS,
-    body,
-  }).then((res) => res.json());
-}
-function getInputValue(selector) {
-  const el = document.querySelector(selector);
-  const value = el.value;
-  return value;
-}
 function getUserId() {
   return document.querySelector("[data-user-id]").dataset.userId;
 }

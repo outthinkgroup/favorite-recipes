@@ -117,26 +117,22 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"scripts/main.js":[function(require,module,exports) {
+})({"scripts/helpers.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.replaceWithForm = replaceWithForm;
+exports.useApi = useApi;
+exports.getInputValue = getInputValue;
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-//main.js
 var BASE_URL = "/wp-json/recipe-list/v1";
 var OPTIONS = {
   method: "POST",
@@ -145,77 +141,28 @@ var OPTIONS = {
     "Content-Type": "application/json"
   }
 };
-window.addEventListener("DOMContentLoaded", initManagement);
 
-function initManagement() {
-  if (!document.querySelector(".recipe-list-management-area")) return;
-  var addListForm = document.querySelector("#add-list");
-  addListForm.addEventListener("submit", handleAddList);
+function replaceWithForm(el, callback) {
+  var btnText = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "submit";
+  var replaceParent = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  var form = document.createElement("form");
+  var parent = el.parentElement;
+  form.addEventListener("submit", function (e) {
+    callback(e);
 
-  var allDeleteListBtns = _toConsumableArray(document.querySelectorAll(".delete-button"));
-
-  allDeleteListBtns.forEach(function (btn) {
-    return btn.addEventListener("click", handleDeleteList);
+    if (!replaceParent) {
+      form.replaceWith(el);
+    } else {
+      form.replaceWith(parent);
+    }
   });
+  form.innerHTML = "\n    <input type=\"text\" class=\"small-inline-input\" /> \n    <button type=\"submit\">".concat(btnText, "</button>\n    ");
 
-  var allAddItemBtns = _toConsumableArray(document.querySelectorAll(".add_item"));
-
-  allAddItemBtns.forEach(function (btn) {
-    return btn.addEventListener("click", handleAddRecipe);
-  });
-} //?ADD LIST
-
-
-function handleAddList(e) {
-  e.preventDefault();
-  var listName = getInputValue("#new-list");
-  var userId = getUserId();
-  var response = addList(listName, userId).then(function (res) {
-    return console.log(res);
-  });
-}
-
-function addList(listName, userId) {
-  var data = {
-    user_id: parseInt(userId),
-    title: listName
-  };
-  return useApi("create-list", data);
-} //?DELETE LIST
-
-
-function handleDeleteList(e) {
-  var listId = e.target.closest(".list-item").dataset.listId;
-  var userId = getUserId();
-  var response = removeList(listId, userId).then(function (res) {
-    return console.log(res);
-  });
-}
-
-function deleteList(listId, userId) {
-  var data = {
-    list_id: parseInt(listId),
-    user_id: parseInt(userId)
-  };
-  return useApi("delete-list", data);
-}
-
-function handleAddRecipe(e) {
-  var button = e.target;
-  var recipeId = button.dataset.recipeId; //TODO get list id
-
-  var response = addRecipeToList(recipeId).then(function (res) {
-    return console.log(res);
-  });
-} // Jul 14, 2020 - Joseph changed this to accommodate his staging area.
-
-
-function addRecipeToList(recipeId) {
-  var listId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8045;
-  return useApi("add-item", {
-    item_id: parseInt(recipeId),
-    list_id: listId
-  });
+  if (!replaceParent) {
+    el.replaceWith(form);
+  } else {
+    parent.replaceWith(form);
+  }
 }
 
 function useApi(endpoint, data) {
@@ -232,11 +179,114 @@ function getInputValue(selector) {
   var value = el.value;
   return value;
 }
+},{}],"scripts/main.js":[function(require,module,exports) {
+"use strict";
+
+var _helpers = require("./helpers");
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+window.addEventListener("DOMContentLoaded", initManagement);
+
+function initManagement() {
+  if (!document.querySelector(".recipe-list-management-area")) return;
+  var addListForm = document.querySelector("#add-list");
+  addListForm.addEventListener("submit", handleAddList);
+
+  var allDeleteListBtns = _toConsumableArray(document.querySelectorAll(".delete-button"));
+
+  allDeleteListBtns.forEach(function (btn) {
+    return btn.addEventListener("click", handleDeleteList);
+  });
+
+  var allRenameListBtns = _toConsumableArray(document.querySelectorAll(".rename-button"));
+
+  allRenameListBtns.forEach(function (btn) {
+    return btn.addEventListener("click", handleRenameListBtnClick);
+  });
+
+  var allAddItemBtns = _toConsumableArray(document.querySelectorAll(".add_item"));
+
+  allAddItemBtns.forEach(function (btn) {
+    return btn.addEventListener("click", handleAddRecipe);
+  });
+} //HANDLERS AND API CALLS
+//ADD LIST
+
+
+function handleAddList(e) {
+  e.preventDefault();
+  var listName = (0, _helpers.getInputValue)("#new-list");
+  var userId = getUserId();
+  var response = addList(listName, userId).then(function (res) {
+    return console.log(res);
+  });
+}
+
+function addList(listName, userId) {
+  var data = {
+    user_id: parseInt(userId),
+    title: listName
+  };
+  return (0, _helpers.useApi)("create-list", data);
+} //DELETE LIST
+
+
+function handleDeleteList(e) {
+  var listId = e.target.closest(".list-item").dataset.listId;
+  var userId = getUserId();
+  var response = deleteList(listId, userId).then(function (res) {
+    return console.log(res);
+  });
+}
+
+function deleteList(listId, userId) {
+  var data = {
+    list_id: parseInt(listId),
+    user_id: parseInt(userId)
+  };
+  return (0, _helpers.useApi)("delete-list", data);
+} //RENAME LIST
+
+
+function handleRenameListBtnClick(e) {
+  (0, _helpers.replaceWithForm)(e.target, function () {
+    return console.log("yay");
+  }, "rename", true);
+}
+
+function handleAddRecipe(e) {
+  var button = e.target;
+  var recipeId = button.dataset.recipeId; //TODO get list id
+
+  var response = addRecipeToList(recipeId).then(function (res) {
+    return console.log(res);
+  });
+} // Jul 14, 2020 - Joseph changed this to accommodate his staging area.
+
+
+function addRecipeToList(recipeId) {
+  var listId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8045;
+  return (0, _helpers.useApi)("add-item", {
+    item_id: parseInt(recipeId),
+    list_id: listId
+  });
+}
 
 function getUserId() {
   return document.querySelector("[data-user-id]").dataset.userId;
 }
-},{}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+},{"./helpers":"scripts/helpers.js"}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
 function getBundleURLCached() {
