@@ -55,12 +55,16 @@ function my_favorites_endpoint_content(){
       </form>
     </div>
     <?php $recipes = get_posts('post_type=recipe&posts_per_page=-1'); ?>
-    <ul class="lists">
+    <h3>Recipes</h3>
+    <ul class="my-lists">
     <?php
     foreach ($recipes as $recipe) { ?>
-      <li>
+      <li class="list-item">
         <?php echo $recipe->post_title; ?> 
-        <?php add_recipe_button($recipe->ID); ?>
+        <div class="list-actions">
+          <?php add_recipe_button($recipe->ID); ?>
+          <?php delete_recipe_button($recipe->ID); ?>
+      </div>
       </li>
     <?php
     }
@@ -77,6 +81,7 @@ function my_favorites_endpoint_content(){
 /* 
 helpers and html components
 */
+
 
 function show_list_title_and_count($list){
   ?>
@@ -97,8 +102,11 @@ function show_list_actions(){
   </div>
   <?php
 }
+function get_list_items($list_id) {
+  return get_post_meta( $list_id, 'list_items', true);
+}
 function show_count($list_id){
-  $list_items = get_post_meta( $list_id, 'list_items', true);
+  $list_items = get_list_items( $list_id );
   if(!is_array($list_items)){
     echo 0;
   } else {
@@ -112,6 +120,50 @@ function add_recipe_button($recipe_id){
     $recipe_id = $post->ID;
   }
   ?>
-    <button type="button" class="add_item" data-recipe-id="<?php echo $recipe->ID; ?>">Add</button>
+    <button type="button" class="add_item" data-recipe-id="<?php echo $recipe_id; ?>">Add</button>
   <?php
 }
+
+function delete_recipe_button($recipe_id){
+  global $post;
+  if($recipe_id === null){
+    $recipe_id = $post->ID;
+  }
+  ?>
+    <button type="button" class="delete_item" data-recipe-id="<?php echo $recipe_id; ?>">Delete</button>
+  <?php
+}
+
+
+// NOTE: this should probably be in a front-end functions organization. 
+//[show_list_items]
+function show_list_items_func( $atts ) {
+  global $post;
+  $list_items = get_post_meta( $post->ID, 'list_items', true);
+  //var_dump($list_items);
+  if (!empty($list_items)) {
+    $recipes = get_posts(array(
+      'post_type' => 'recipe',
+      'post__in' => $list_items
+    ));
+    ob_start(); ?>
+    <ul class="my-lists">
+      <?php
+    foreach ($recipes as $recipe) { ?>
+    <li class="list-item">
+        <?php echo $recipe->post_title; ?> 
+        <div class="list-actions">
+          <?php add_recipe_button($recipe->ID); ?>
+          <?php delete_recipe_button($recipe->ID); ?>
+      </div>
+      </li>
+    <?php } ?>
+    </ul>
+  <?php
+  } else {
+    echo 'No Recipes have been added to this list. You might want to add some now.';
+  }
+  
+	return ob_get_clean();;
+}
+add_shortcode( 'show_list_items', 'show_list_items_func' );

@@ -8,6 +8,7 @@
     "build": "parcel build main.js"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.3"
+    "parcel-bundler": "^1.12.3",
+    "sass": "^1.26.10"
   }
 }

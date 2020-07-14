@@ -207,10 +207,11 @@ function handleAddRecipe(e) {
   var response = addRecipeToList(recipeId).then(function (res) {
     return console.log(res);
   });
-}
+} // Jul 14, 2020 - Joseph changed this to accommodate his staging area.
+
 
 function addRecipeToList(recipeId) {
-  var listId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8052;
+  var listId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8045;
   return useApi("add-item", {
     item_id: parseInt(recipeId),
     list_id: listId
@@ -341,7 +342,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60598" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51419" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

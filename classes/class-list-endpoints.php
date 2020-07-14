@@ -87,16 +87,25 @@ class List_Endpoints {
     // Update the post into the database
     $result = wp_update_post( $renamed_list );
     // need error reporting.
-    post_error_reporter($result);
+    //post_error_reporter($result);
 
   }
   static function delete_list(){
+    $data = List_Endpoints::get_json();
+    $deleted_list = array(
+        'ID'           => $data->list_id,
+        'post_status'   => 'trash',
+    );
+
+    // Update the post into the database
+    $result = wp_update_post( $deleted_list );
 
   }
   static function remove_item(){
+
     // Check if in array.
     // get key of array if so
-    // pluck array
+    // pluck array - need to search
     // save array.
   }
   static function add_item(){
@@ -108,11 +117,9 @@ class List_Endpoints {
     if (empty($list_items)) {
       $list_items = array();
     }
-    // if (!in_array($item_id, $list_items)) {
        $list_items[] = $item_id;
-    // }
-    //unset($list_items);
-    //$list_items = '';
+    
+  //$list_items = '';
     if (update_post_meta( $list_id, $meta_key, $list_items)) {
       $response = new WP_REST_Response(true);
       $response->set_status(200);
@@ -149,4 +156,5 @@ class List_Endpoints {
     $data = json_decode($json);
     return $data;
   }
+  
 }
