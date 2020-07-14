@@ -158,12 +158,19 @@ function initManagement() {
     return btn.addEventListener("click", handleDeleteList);
   });
 
+  var allRenameListBtns = _toConsumableArray(document.querySelectorAll(".rename-button"));
+
+  allRenameListBtns.forEach(function (btn) {
+    return btn.addEventListener("click", handleRenameListBtnClick);
+  });
+
   var allAddItemBtns = _toConsumableArray(document.querySelectorAll(".add_item"));
 
   allAddItemBtns.forEach(function (btn) {
     return btn.addEventListener("click", handleAddRecipe);
   });
-} //?ADD LIST
+} //HANDLERS AND API CALLS
+//ADD LIST
 
 
 function handleAddList(e) {
@@ -181,7 +188,7 @@ function addList(listName, userId) {
     title: listName
   };
   return useApi("create-list", data);
-} //?DELETE LIST
+} //DELETE LIST
 
 
 function handleDeleteList(e) {
@@ -198,6 +205,13 @@ function deleteList(listId, userId) {
     user_id: parseInt(userId)
   };
   return useApi("delete-list", data);
+} //RENAME LIST
+
+
+function handleRenameListBtnClick(e) {
+  replaceWithForm(e.target, function () {
+    return console.log("yay");
+  }, "rename", true);
 }
 
 function handleAddRecipe(e) {
@@ -234,6 +248,29 @@ function getInputValue(selector) {
 
 function getUserId() {
   return document.querySelector("[data-user-id]").dataset.userId;
+}
+
+function replaceWithForm(el, callback) {
+  var btnText = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "submit";
+  var replaceParent = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  var form = document.createElement("form");
+  var parent = el.parentElement;
+  form.addEventListener("submit", function (e) {
+    callback(e);
+
+    if (!replaceParent) {
+      form.replaceWith(el);
+    } else {
+      form.replaceWith(parent);
+    }
+  });
+  form.innerHTML = "\n    <input type=\"text\" class=\"small-inline-input\" /> \n    <button type=\"submit\">".concat(btnText, "</button>\n    ");
+
+  if (!replaceParent) {
+    el.replaceWith(form);
+  } else {
+    parent.replaceWith(form);
+  }
 }
 },{}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;

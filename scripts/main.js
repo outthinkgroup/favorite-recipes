@@ -20,12 +20,19 @@ function initManagement() {
     btn.addEventListener("click", handleDeleteList)
   );
 
+  const allRenameListBtns = [...document.querySelectorAll(".rename-button")];
+  allRenameListBtns.forEach((btn) =>
+    btn.addEventListener("click", handleRenameListBtnClick)
+  );
+
   const allAddItemBtns = [...document.querySelectorAll(".add_item")];
   allAddItemBtns.forEach((btn) =>
     btn.addEventListener("click", handleAddRecipe)
   );
 }
-//?ADD LIST
+
+//HANDLERS AND API CALLS
+//ADD LIST
 function handleAddList(e) {
   e.preventDefault();
   const listName = getInputValue("#new-list");
@@ -37,7 +44,7 @@ function addList(listName, userId) {
   return useApi("create-list", data);
 }
 
-//?DELETE LIST
+//DELETE LIST
 function handleDeleteList(e) {
   const listId = e.target.closest(".list-item").dataset.listId;
   const userId = getUserId();
@@ -46,6 +53,11 @@ function handleDeleteList(e) {
 function deleteList(listId, userId) {
   const data = { list_id: parseInt(listId), user_id: parseInt(userId) };
   return useApi("delete-list", data);
+}
+
+//RENAME LIST
+function handleRenameListBtnClick(e) {
+  replaceWithForm(e.target, () => console.log("yay"), "rename", true);
 }
 
 function handleAddRecipe(e) {
@@ -72,4 +84,31 @@ function getInputValue(selector) {
 }
 function getUserId() {
   return document.querySelector("[data-user-id]").dataset.userId;
+}
+
+function replaceWithForm(
+  el,
+  callback,
+  btnText = "submit",
+  replaceParent = false
+) {
+  const form = document.createElement("form");
+  const parent = el.parentElement;
+  form.addEventListener("submit", (e) => {
+    callback(e);
+    if (!replaceParent) {
+      form.replaceWith(el);
+    } else {
+      form.replaceWith(parent);
+    }
+  });
+  form.innerHTML = `
+    <input type="text" class="small-inline-input" /> 
+    <button type="submit">${btnText}</button>
+    `;
+  if (!replaceParent) {
+    el.replaceWith(form);
+  } else {
+    parent.replaceWith(form);
+  }
 }
