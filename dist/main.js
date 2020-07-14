@@ -126,6 +126,19 @@ Object.defineProperty(exports, "__esModule", {
 exports.replaceWithForm = replaceWithForm;
 exports.useApi = useApi;
 exports.getInputValue = getInputValue;
+exports.getInputValueByForm = getInputValueByForm;
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -142,24 +155,32 @@ var OPTIONS = {
   }
 };
 
-function replaceWithForm(el, callback) {
-  var btnText = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "submit";
-  var replaceParent = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+function replaceWithForm(_ref) {
+  var element = _ref.element,
+      callback = _ref.callback,
+      _ref$formLabel = _ref.formLabel,
+      formLabel = _ref$formLabel === void 0 ? null : _ref$formLabel,
+      _ref$btnText = _ref.btnText,
+      btnText = _ref$btnText === void 0 ? "submit" : _ref$btnText,
+      _ref$replaceParent = _ref.replaceParent,
+      replaceParent = _ref$replaceParent === void 0 ? false : _ref$replaceParent;
   var form = document.createElement("form");
-  var parent = el.parentElement;
+  form.classList.add("generated-inline");
+  var parent = element.parentElement;
   form.addEventListener("submit", function (e) {
     callback(e);
 
     if (!replaceParent) {
-      form.replaceWith(el);
+      form.replaceWith(element);
     } else {
       form.replaceWith(parent);
     }
   });
-  form.innerHTML = "\n    <input type=\"text\" class=\"small-inline-input\" /> \n    <button type=\"submit\">".concat(btnText, "</button>\n    ");
+  form.innerHTML = "\n    <input type=\"text\" placeholder=\"".concat(formLabel, "\" class=\"small-inline-input\" /> \n    <button type=\"submit\">").concat(btnText, "</button>\n    ");
 
-  if (!replaceParent) {
-    el.replaceWith(form);
+  if (replaceParent === false || !replaceParent) {
+    console.log(element);
+    element.replaceWith(form);
   } else {
     parent.replaceWith(form);
   }
@@ -179,54 +200,67 @@ function getInputValue(selector) {
   var value = el.value;
   return value;
 }
+
+function getInputValueByForm(form) {
+  var inputs = _toConsumableArray(form.querySelectorAll("input"));
+
+  var values = inputs.reduce(function (valueObj, input, index) {
+    var value = input.value,
+        name = input.name;
+
+    if (name) {
+      valueObj[name] = value;
+    } else {
+      valueObj["index".concat(index)] = value;
+    }
+
+    return valueObj;
+  }, {});
+  return values;
+}
 },{}],"scripts/main.js":[function(require,module,exports) {
 "use strict";
 
 var _helpers = require("./helpers");
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 window.addEventListener("DOMContentLoaded", initManagement);
 
 function initManagement() {
   if (!document.querySelector(".recipe-list-management-area")) return;
-  var addListForm = document.querySelector("#add-list");
-  addListForm.addEventListener("submit", handleAddList);
-
-  var allDeleteListBtns = _toConsumableArray(document.querySelectorAll(".delete-button"));
-
-  allDeleteListBtns.forEach(function (btn) {
-    return btn.addEventListener("click", handleDeleteList);
-  });
-
-  var allRenameListBtns = _toConsumableArray(document.querySelectorAll(".rename-button"));
-
-  allRenameListBtns.forEach(function (btn) {
-    return btn.addEventListener("click", handleRenameListBtnClick);
-  });
-
-  var allAddItemBtns = _toConsumableArray(document.querySelectorAll(".add_item"));
-
-  allAddItemBtns.forEach(function (btn) {
-    return btn.addEventListener("click", handleAddRecipe);
-  });
+  var list = document.querySelector(".my-lists");
+  addListItemActionHandlers(list);
+  var listBottom = document.querySelector(".list-bottom");
+  addCreateListHandler(listBottom);
 } //HANDLERS AND API CALLS
-//ADD LIST
+
+
+function addCreateListHandler(parent) {
+  console.log("object");
+  var showFormBtn = parent.querySelector("[data-action=\"show-create-list\"]");
+  showFormBtn.addEventListener("click", handleShowCreateListForm);
+}
+
+function handleShowCreateListForm(e) {
+  var element = e.currentTarget;
+  var callback = handleAddList;
+  var formLabel = "List Name";
+  var btnText = "create";
+  (0, _helpers.replaceWithForm)({
+    element: element,
+    callback: callback,
+    formLabel: formLabel,
+    btnText: btnText,
+    replaceParent: false
+  });
+} //ADD LIST
 
 
 function handleAddList(e) {
   e.preventDefault();
-  var listName = (0, _helpers.getInputValue)("#new-list");
+
+  var _getInputValueByForm = (0, _helpers.getInputValueByForm)(e.target),
+      listName = _getInputValueByForm.index0;
+
   var userId = getUserId();
   var response = addList(listName, userId).then(function (res) {
     return console.log(res);
@@ -239,11 +273,27 @@ function addList(listName, userId) {
     title: listName
   };
   return (0, _helpers.useApi)("create-list", data);
+}
+
+function addListItemActionHandlers(list) {
+  list.addEventListener("click", executeListItemAction);
+
+  function executeListItemAction(e) {
+    var item = e.target;
+    var action = item.dataset.action;
+    if (!action) return;
+
+    switch (action) {
+      case "delete-list":
+        handleDeleteList(item);
+        break;
+    }
+  }
 } //DELETE LIST
 
 
-function handleDeleteList(e) {
-  var listId = e.target.closest(".list-item").dataset.listId;
+function handleDeleteList(element) {
+  var listId = element.closest(".list-item").dataset.listId;
   var userId = getUserId();
   var response = deleteList(listId, userId).then(function (res) {
     return console.log(res);
@@ -260,9 +310,14 @@ function deleteList(listId, userId) {
 
 
 function handleRenameListBtnClick(e) {
-  (0, _helpers.replaceWithForm)(e.target, function () {
-    return console.log("yay");
-  }, "rename", true);
+  (0, _helpers.replaceWithForm)({
+    element: e.target,
+    callback: function callback() {
+      return console.log("yay");
+    },
+    btnText: "rename",
+    replaceParent: true
+  });
 }
 
 function handleAddRecipe(e) {

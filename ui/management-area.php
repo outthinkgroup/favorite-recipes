@@ -48,25 +48,10 @@ function my_favorites_endpoint_content(){
           }
         ?>
     
-      <form id="add-list">
-        <label for="new-list">Add a List</label>
-        <input type="text" name="new-list" id="new-list">
-        <button type="submit">Add</button>
-      </form>
+      <div class="list-bottom">
+          <button data-action="show-create-list">Create New List</button>
+      </div>
     </div>
-    <?php $recipes = get_posts('post_type=recipe&posts_per_page=-1'); ?>
-    <ul class="lists">
-    <?php
-    foreach ($recipes as $recipe) { ?>
-      <li>
-        <?php echo $recipe->post_title; ?> 
-        <?php add_recipe_button($recipe->ID); ?>
-      </li>
-    <?php
-    }
-    ?>
-    </ul>
-    
   </div>
 <?php }
 
@@ -82,18 +67,21 @@ function show_list_title_and_count($list){
   ?>
     <div class="recipe-title">
       <span class="count"><?php show_count($list->ID); ?></span>
-      <a href="<?php echo get_the_permalink($list->ID); ?>">
-        <?php echo $list->post_title; ?> 
-      </a>
+      <span>
+        <a href="<?php echo get_the_permalink($list->ID); ?>">
+          <?php echo $list->post_title; ?> 
+        </a>
+        <button class="minimal" data-action="rename-list">edit name</button>
+      </span>
+
     </div>
   <?php
 }
 function show_list_actions(){
   ?>
   <div class="list-actions">
-    <button type="button " class="primary view-list">View List</button>
-    <button type="button " class="edit rename-button">Rename</button>
-    <button type="button " class="danger delete-button">Delete</button>
+    <button type="button" class="primary view-list">View List</button>
+    <button type="button" data-action="delete-list" class="danger">Delete</button>
   </div>
   <?php
 }

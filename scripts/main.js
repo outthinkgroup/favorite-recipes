@@ -1,34 +1,46 @@
-import { replaceWithForm, useApi, getInputValue } from "./helpers";
+import {
+  replaceWithForm,
+  useApi,
+  getInputValue,
+  getInputValueByForm,
+} from "./helpers";
 
 window.addEventListener("DOMContentLoaded", initManagement);
 
 function initManagement() {
   if (!document.querySelector(".recipe-list-management-area")) return;
 
-  const addListForm = document.querySelector("#add-list");
-  addListForm.addEventListener("submit", handleAddList);
+  const list = document.querySelector(".my-lists");
+  addListItemActionHandlers(list);
 
-  const allDeleteListBtns = [...document.querySelectorAll(".delete-button")];
-  allDeleteListBtns.forEach((btn) =>
-    btn.addEventListener("click", handleDeleteList)
-  );
-
-  const allRenameListBtns = [...document.querySelectorAll(".rename-button")];
-  allRenameListBtns.forEach((btn) =>
-    btn.addEventListener("click", handleRenameListBtnClick)
-  );
-
-  const allAddItemBtns = [...document.querySelectorAll(".add_item")];
-  allAddItemBtns.forEach((btn) =>
-    btn.addEventListener("click", handleAddRecipe)
-  );
+  const listBottom = document.querySelector(".list-bottom");
+  addCreateListHandler(listBottom);
 }
 
 //HANDLERS AND API CALLS
+function addCreateListHandler(parent) {
+  console.log("object");
+  const showFormBtn = parent.querySelector(`[data-action="show-create-list"]`);
+  showFormBtn.addEventListener("click", handleShowCreateListForm);
+}
+function handleShowCreateListForm(e) {
+  const element = e.currentTarget;
+  const callback = handleAddList;
+  const formLabel = "List Name";
+  const btnText = "create";
+  replaceWithForm({
+    element,
+    callback,
+    formLabel,
+    btnText,
+    replaceParent: false,
+  });
+}
+
 //ADD LIST
 function handleAddList(e) {
   e.preventDefault();
-  const listName = getInputValue("#new-list");
+  const { index0: listName } = getInputValueByForm(e.target);
   const userId = getUserId();
   const response = addList(listName, userId).then((res) => console.log(res));
 }
@@ -37,9 +49,24 @@ function addList(listName, userId) {
   return useApi("create-list", data);
 }
 
+function addListItemActionHandlers(list) {
+  list.addEventListener("click", executeListItemAction);
+  function executeListItemAction(e) {
+    const item = e.target;
+    const { action } = item.dataset;
+    if (!action) return;
+
+    switch (action) {
+      case "delete-list":
+        handleDeleteList(item);
+        break;
+    }
+  }
+}
+
 //DELETE LIST
-function handleDeleteList(e) {
-  const listId = e.target.closest(".list-item").dataset.listId;
+function handleDeleteList(element) {
+  const listId = element.closest(".list-item").dataset.listId;
   const userId = getUserId();
   const response = deleteList(listId, userId).then((res) => console.log(res));
 }
@@ -50,7 +77,12 @@ function deleteList(listId, userId) {
 
 //RENAME LIST
 function handleRenameListBtnClick(e) {
-  replaceWithForm(e.target, () => console.log("yay"), "rename", true);
+  replaceWithForm({
+    element: e.target,
+    callback: () => console.log("yay"),
+    btnText: "rename",
+    replaceParent: true,
+  });
 }
 
 function handleAddRecipe(e) {

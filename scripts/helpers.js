@@ -7,28 +7,31 @@ const OPTIONS = {
   },
 };
 
-export function replaceWithForm(
-  el,
+export function replaceWithForm({
+  element,
   callback,
+  formLabel = null,
   btnText = "submit",
-  replaceParent = false
-) {
+  replaceParent = false,
+}) {
   const form = document.createElement("form");
-  const parent = el.parentElement;
+  form.classList.add("generated-inline");
+  const parent = element.parentElement;
   form.addEventListener("submit", (e) => {
     callback(e);
     if (!replaceParent) {
-      form.replaceWith(el);
+      form.replaceWith(element);
     } else {
       form.replaceWith(parent);
     }
   });
   form.innerHTML = `
-    <input type="text" class="small-inline-input" /> 
+    <input type="text" placeholder="${formLabel}" class="small-inline-input" /> 
     <button type="submit">${btnText}</button>
     `;
-  if (!replaceParent) {
-    el.replaceWith(form);
+  if (replaceParent === false || !replaceParent) {
+    console.log(element);
+    element.replaceWith(form);
   } else {
     parent.replaceWith(form);
   }
@@ -45,4 +48,18 @@ export function getInputValue(selector) {
   const el = document.querySelector(selector);
   const value = el.value;
   return value;
+}
+export function getInputValueByForm(form) {
+  const inputs = [...form.querySelectorAll("input")];
+  const values = inputs.reduce((valueObj, input, index) => {
+    const { value, name } = input;
+    if (name) {
+      valueObj[name] = value;
+    } else {
+      valueObj[`index${index}`] = value;
+    }
+    return valueObj;
+  }, {});
+
+  return values;
 }
