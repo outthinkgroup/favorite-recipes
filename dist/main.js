@@ -233,6 +233,18 @@ function getInputValueByForm(form) {
 
 var _helpers = require("./helpers");
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 window.addEventListener("DOMContentLoaded", initManagement);
 
 function initManagement() {
@@ -374,20 +386,14 @@ function handleRenameRecipe(e, parent) {
       list.dataset.state = "idle";
     }
   });
-}
-
-function handleAddRecipe(e) {
-  var button = e.target;
-  var recipeId = button.dataset.recipeId; //TODO get list id
-
-  var response = addRecipeToList(recipeId).then(function (res) {
-    console.log(res);
-  });
-} // Jul 14, 2020 - Joseph changed this to accommodate his staging area.
+} //HANDLES ADDING ITEMS TO A LIST
+//THIS MAY NEED TO BE ADDED TO A NEW LIST
+// Jul 14, 2020 - Joseph changed this to accommodate his staging area.
 
 
-function addRecipeToList(recipeId) {
-  var listId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8045;
+function addRecipeToList(_ref) {
+  var recipeId = _ref.recipeId,
+      listId = _ref.listId;
   return (0, _helpers.useApi)("add-item", {
     item_id: parseInt(recipeId),
     list_id: listId
@@ -396,6 +402,82 @@ function addRecipeToList(recipeId) {
 
 function getUserId() {
   return document.querySelector("[data-user-id]").dataset.userId;
+} //!--//--//
+//////////////////////////////////////////////////////////////////////////////
+//* PUT IN NEW JS FILE => BUTTON-RECIPE-LIST.JS
+//////////////////////////////////////////////////////////////////////////////
+
+
+function toggleOnOff(actionElement, parentElementSelector) {
+  var action = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "click";
+  actionElement.addEventListener(action, toggleState);
+
+  if (action === "click") {
+    document.body.addEventListener(action, toggleOff);
+  }
+
+  function toggleState(e) {
+    var parentEl = e.target.closest(parentElementSelector);
+    var on = parentEl.dataset.state;
+
+    if (on) {
+      delete parentEl.dataset.state;
+    } else {
+      parentEl.dataset.state = "on";
+    }
+  }
+
+  function toggleOff(e) {
+    if (!e.target.closest(parentElementSelector)) {
+      delete actionElement.closest(parentElementSelector).dataset.state;
+    }
+  }
+}
+
+window.addEventListener("DOMContentLoaded", addRecipeToListButtonInit);
+
+function addRecipeToListButtonInit() {
+  var mainComponents = _toConsumableArray(document.querySelectorAll(".add-recipe-to-list"));
+
+  mainComponents.forEach(function (component) {
+    return perMainComponentDo(component);
+  });
+}
+
+function perMainComponentDo(component) {
+  var toggleButton = component.querySelector('[data-action="toggle-list"]');
+  toggleOnOff(toggleButton, ".add-recipe-to-list");
+  var list = component.querySelector(".button-lists");
+  list.addEventListener("click", handleRecipeListItemActionFromButton);
+
+  function handleRecipeListItemActionFromButton(e) {
+    var clickedItem = e.target;
+    var button = clickedItem.closest("[data-action]");
+    var action = button.dataset.action;
+
+    switch (action) {
+      case "add-recipe":
+        addRecipeToList({
+          recipeId: component.dataset.recipeId,
+          listId: button.dataset.listId
+        });
+        plusOneCountFor(button.dataset.listId);
+        break;
+
+      default:
+        console.log("no action was given");
+        break;
+    }
+  }
+
+  function plusOneCountFor(listId) {
+    var allListWithID = document.querySelectorAll("[data-list-id=\"".concat(listId, "\"]"));
+    allListWithID.forEach(function (list) {
+      var countEl = list.querySelector(".recipe-title .count");
+      var updatedCount = parseInt(countEl.innerText) + 1;
+      countEl.innerText = updatedCount;
+    });
+  }
 }
 },{"./helpers":"scripts/helpers.js"}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;

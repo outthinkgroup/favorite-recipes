@@ -138,6 +138,7 @@ class List_Endpoints {
     $item_id = $data->item_id;
     $list_id = $data->list_id;
     $list_items = get_list_items( $list_id );
+    var_dump(['$list_items'=>$list_items, '$list_id'=>$list_id, '$item_id'=>$item_id]);
     if (empty($list_items)) {
       $list_items = array();
     }

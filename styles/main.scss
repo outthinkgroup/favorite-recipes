@@ -28,6 +28,7 @@
   display: flex;
   font-size: 20px;
   font-weight: 600;
+  align-items: center;
   a {
     color: black;
     &:hover {
@@ -101,5 +102,54 @@ form.generated-inline {
     pointer-events: all;
     background: var(--button-color);
     width: auto;
+  }
+}
+button.button-minimal {
+  appearance: none;
+  background: transparent;
+  width: 100%;
+  margin: 0;
+  &:hover {
+    background: #efefef;
+  }
+}
+.add-recipe-to-list {
+  position: relative;
+  > button {
+    width: 100%;
+    border-radius: 3px;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    * {
+      padding: 12px 15px;
+      text-align: center;
+    }
+  }
+  .button-lists {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    width: 100%;
+    background: white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    display: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+    border-radius: 3px;
+    button {
+      padding: 5px;
+      * {
+        font-size: 14px;
+        color: black;
+      }
+    }
+  }
+  &[data-state] {
+    .button-lists {
+      display: unset;
+    }
   }
 }
