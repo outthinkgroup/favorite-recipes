@@ -78,11 +78,12 @@ class List_Endpoints {
         'post_type' => 'lists',
     );
     $result = wp_insert_post($new_list_array);
-    //$title = get_the_title($result);
-    
+    $title = get_the_title($result);
+    $link = get_the_permalink($result);
     $response = new WP_REST_Response(['data'=>[
-      'title'=>$data->title,
-      'id'  => $result,
+      'title'=> $title,
+      'list_id'  => $result,
+      'link'    =>  $link,
     ]]);
     $response->set_status(200);
       return $response;

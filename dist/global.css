@@ -1,0 +1,68 @@
+.add-recipe-to-list {
+  position: relative;
+}
+.add-recipe-to-list > button {
+  width: 100%;
+  border-radius: 3px;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+}
+.add-recipe-to-list > button * {
+  padding: 12px 15px;
+  text-align: center;
+}
+.add-recipe-to-list .button-lists {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  width: 100%;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  border-radius: 3px;
+}
+.add-recipe-to-list .button-lists button {
+  padding: 5px;
+}
+.add-recipe-to-list .button-lists button * {
+  font-size: 14px;
+  color: black;
+}
+.add-recipe-to-list[data-state] .button-lists {
+  display: unset;
+}
+
+.recipe-title {
+  display: flex;
+  font-size: 20px;
+  font-weight: 600;
+  align-items: center;
+}
+.recipe-title a {
+  color: black;
+}
+.recipe-title a:hover {
+  color: #0fa3b1;
+}
+.recipe-title .count {
+  font-size: 16px;
+  display: inline-flex;
+  width: 2em;
+  min-width: 2em;
+  height: 2em;
+  line-height: 0;
+  align-items: center;
+  justify-content: center;
+  background: #2cadba;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+/*# sourceMappingURL=/global.css.map */

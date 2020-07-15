@@ -8,15 +8,17 @@ if(!class_exists( 'Favorite_Recipes' )) {
       $this->create_management_area();
       $this->button_shortcode();
       $this->add_endpoints();
-      
+      include_once FAVORITE_RECIPES_PATH . '/ui/include-sprites.php';
+      // include_once FAVORITE_RECIPES_PATH . '/ui/get-icon.php';
     }
     
     public function enqueue_all(){
       //TODO seperate the styles and scripts that need only to apply to the management page, and what should be global
-      wp_enqueue_script('add-recipe-to-list', FAVORITE_RECIPES_URL . 'dist/scripts/add-recipe-button.js', array(), true);
-      wp_enqueue_style('recipe-list-styles', FAVORITE_RECIPES_URL . 'dist/main.css', '1.00' , 'all');
-       if(!is_account_page()) return;
-      wp_enqueue_script('recipe-list-script', FAVORITE_RECIPES_URL . 'dist/main.js', array(), true);
+      wp_enqueue_script('fr-global-scripts', FAVORITE_RECIPES_URL . 'dist/global.js', array(), true);
+      wp_enqueue_style('fr-global-styles', FAVORITE_RECIPES_URL . 'dist/global.css', '1.00' , 'all');
+      if(!is_account_page()) return;
+      wp_enqueue_script('fr-account-page-script', FAVORITE_RECIPES_URL . 'dist/account-page.js', array(), true);
+      wp_enqueue_style('fr-account-page-styles', FAVORITE_RECIPES_URL . 'dist/account-page.css', '1.00' , 'all');
 
     }
     //change for real env

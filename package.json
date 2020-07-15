@@ -4,11 +4,15 @@
   "main": "main.js",
   "license": "MIT",
   "scripts": {
-    "dev": "parcel main.js ./scripts/add-recipe-button.js",
-    "build": "parcel build main.js ./scripts/add-recipe-button.js"
+    "dev": "parcel watch ./assets/account-page.js ./assets/global.js",
+    "build": "parcel build ./assets/account-page.js ./assets/global.js",
+    "clean": "rm -r dist && rm -r .cache"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.3",
     "sass": "^1.26.10"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.14.0"
   }
 }

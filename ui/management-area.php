@@ -27,33 +27,28 @@ function my_favorites_endpoint_content(){
   >
     <div class="lists">
       <h2>My Recipe Lists</h2>
-      
-        <?php 
-          $lists = get_user_lists($user_id);
-
-          if (!empty($lists)) { ?>
-            <ul class='my-lists'>
-            <?php
-          foreach($lists as $list) { ?>
-            <li 
-              class="list-item" 
-              data-list-id="<?php echo $list->ID; ?>"
-              data-state="idle"
-            >
-              <?php show_list_title_and_count($list); ?>
-              <?php show_list_actions($list->ID); ?> 
-            </li>
-          <?php } ?>
-          </ul>
-        <?php 
-          }
-        ?>
-        <div class="lists-action">
-          <button data-action="show-create-list"> + Create New List</button>
+      <?php 
+      $lists = get_user_lists($user_id);
+      ?> 
+      <ul class='my-lists'> 
+      <?php  
+        if (!empty($lists)) { 
+          foreach($lists as $list) {
+            show_list_item($list);
+          } 
+        }
+        //this display a hidden list item with the html skeleton
+        //used for creating new list items
+        show_list_item();
+        ?> 
+      </ul>
+      <div class="lists-action">
+        <button data-action="show-create-list"> + Create New List</button>
       </div>
     </div>
   </div>
-<?php }
+  <?php 
+}
 
 
 
@@ -72,33 +67,59 @@ function get_user_lists($user_id){
   $lists = get_posts($listArgs);
   return $lists;
 }
-
+function show_list_item( $list=null ){
+  $list_state = $list ? 'idle' : 'hidden';
+  ?>
+  <li 
+    class="list-item"
+    data-list-id="<?php if($list) echo $list->ID; ?>"
+    data-state="<?php echo $list_state; ?>"
+  >
+    <?php show_list_title_and_count($list); ?>
+    <?php show_list_actions($list); ?> 
+  </li> 
+  <?php
+}
 function show_list_title_and_count($list, $options=['edit'=>true, 'recipe_link'=>true]){
   
   ?>
     <div class="recipe-title" style="--button-color:#efefef">
-      <span class="count"><?php show_count($list->ID); ?></span>
+      <span class="count">
+        <?php 
+        if($list){
+          show_count($list->ID); 
+        }else{
+          echo 0;
+        }
+        ?>
+      </span>
       <span>
-<?php if($options['recipe_link']): ?> 
-  <a href="<?php echo get_the_permalink($list->ID); ?>">
-  <?php endif; ?>
-          <?php echo $list->post_title; ?> 
-  <?php if($options['recipe_link']): ?> 
-    </a>
-  <?php endif; ?>  
+      <?php if($options['recipe_link']): ?> 
+        <a href="<?php if($list) echo get_the_permalink($list->ID); ?>">
+        <?php endif; ?>
+          <?php 
+            if($list){
+              echo $list->post_title; 
+            } else{
+              echo 'New List';
+            }
+          ?> 
+        <?php if($options['recipe_link']): ?> 
+        </a>
+        <?php endif; ?>  
         <?php if($options['edit']):?>
           <button class="minimal" data-action="rename-list">edit name</button>
         <?php endif; ?>
       </span>
-
     </div>
   <?php
 }
 
-function show_list_actions($list_id){
+function show_list_actions($list){
+  $list_id = $list ? $list->ID : null;
   ?>
   <div class="list-actions">
-    <a class="primary button view-list" href="<?php echo get_the_permalink($list_id); ?>">View List</a>
+    <a class="primary button view-list" href="<?php if($list) echo get_the_permalink($list_id); ?>">View List</a>
     <button type="button" data-action="delete-list" class="danger">Delete</button>
   </div>
   <?php

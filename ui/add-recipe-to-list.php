@@ -4,8 +4,10 @@ function add_recipe_button(){
 
   $post_id = $post->ID;
   $userID = get_current_user_id();
+
   ?>
   <div class="add-recipe-to-list" data-recipe-id="<?php echo $post_id; ?>">
+    <?php get_icon('bell');?>
     <button data-action="toggle-list"><span class="button-body">Add Recipe To List</span><span class="button-icon">&darr;</span></button>
     <?php
     $lists = get_user_lists($userID);
