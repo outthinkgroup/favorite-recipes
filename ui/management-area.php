@@ -83,47 +83,27 @@ function show_list_title_and_count($list, $options=['edit'=>true, 'recipe_link'=
   <a href="<?php echo get_the_permalink($list->ID); ?>">
   <?php endif; ?>
           <?php echo $list->post_title; ?> 
-<<<<<<< HEAD
-        </a>
-        <button class="minimal" data-action="rename-list"><i class="far fa-edit"></i> edit name</button>
-=======
   <?php if($options['recipe_link']): ?> 
     </a>
   <?php endif; ?>  
         <?php if($options['edit']):?>
           <button class="minimal" data-action="rename-list">edit name</button>
         <?php endif; ?>
->>>>>>> 2d24480c143e559efe7b8016f97dbcd3870cf240
       </span>
 
     </div>
   <?php
 }
-<<<<<<< HEAD
-function show_list_actions($list){
-  ?>
-  <div class="list-actions">
-    <a href="<?php echo get_permalink($list->ID); ?>" class="primary button view-list">View List</a>
-=======
 
 function show_list_actions($list_id){
   ?>
   <div class="list-actions">
     <a class="primary button view-list" href="<?php echo get_the_permalink($list_id); ?>">View List</a>
->>>>>>> 2d24480c143e559efe7b8016f97dbcd3870cf240
     <button type="button" data-action="delete-list" class="danger">Delete</button>
   </div>
   <?php
 }
 
-function show_item_actions($item){
-  ?>
-  <div class="list-actions">
-    <?php add_recipe_button($item->ID); ?>
-    <?php delete_recipe_button($item->ID); ?>
-  </div>
-  <?php
-}
 function get_list_items($list_id) {
   return get_post_meta( $list_id, 'list_items', true);
 }
@@ -169,8 +149,8 @@ function show_list_items_func( $atts ) {
     <li class="list-item">
         <?php echo $recipe->post_title; ?> 
         <div class="list-actions">
-          <?php add_recipe_button($recipe->ID); ?>
-          <?php delete_recipe_button($recipe->ID); ?>
+          <?php //add_recipe_button($recipe->ID); ?>
+          <?php //delete_recipe_button($recipe->ID); ?>
       </div>
       </li>
     <?php } ?>
@@ -183,16 +163,3 @@ function show_list_items_func( $atts ) {
 	return ob_get_clean();;
 }
 add_shortcode( 'show_list_items', 'show_list_items_func' );
-
-//[show_item_actions]
-function show_item_actions_func( $atts ) {
-  global $post;
-  //$list_items = get_list_items( $post->ID );
-  //var_dump($list_items);
-  global $post;
-  ob_start(); 
-  show_item_actions($post->ID);
-  
-	return ob_get_clean();
-}
-add_shortcode( 'show_actions', 'show_item_actions_func' );

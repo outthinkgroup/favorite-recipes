@@ -1,6 +1,15 @@
 <?php
 /*
 Nomenclature:
+
+Standard user feedback:
+  Immediately update info.
+  .75 opacity
+  Upon Success, update info with real data
+    1.0 opacity
+  Upon failure
+    Change bg color to red.
+
 There are lists, and there are items.
 They will always be referred to as such:
 
