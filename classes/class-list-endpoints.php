@@ -1,6 +1,15 @@
 <?php
 /*
 Nomenclature:
+
+Standard user feedback:
+  Immediately update info.
+  .75 opacity
+  Upon Success, update info with real data
+    1.0 opacity
+  Upon failure
+    Change bg color to red.
+
 There are lists, and there are items.
 They will always be referred to as such:
 
@@ -90,7 +99,7 @@ class List_Endpoints {
     // Update the post into the database
     $result = wp_update_post( $renamed_list );
     // need error reporting.
-    //post_error_reporter($result);
+
     $response = new WP_REST_Response(['data'=> 'TEMPORARY']);
     $response->set_status(200);
     return $response;
@@ -170,16 +179,13 @@ class List_Endpoints {
         $errors = $post_id->get_error_messages();
         $error = 'There has been an error --';
         foreach ($errors as $error) {
-          // not sure of my syntax here.
             $error .= $error;
         }
         $return_arr['error'] = $error;
-        $response = new WP_REST_Response($error);
+        $response = new WP_REST_Response($return_arr);
 	      $response->set_status(400);
         return $response;
     } else {
-      // 1:43 PM - working on building [data] array.
-      //$return_arr
         $response = new WP_REST_Response($id);
 	      $response->set_status(200);
         return $response;

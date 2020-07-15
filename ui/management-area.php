@@ -49,7 +49,7 @@ function my_favorites_endpoint_content(){
           }
         ?>
         <div class="lists-action">
-          <button data-action="show-create-list">Create New List</button>
+          <button data-action="show-create-list"> + Create New List</button>
       </div>
     </div>
   </div>
@@ -103,6 +103,7 @@ function show_list_actions($list_id){
   </div>
   <?php
 }
+
 function get_list_items($list_id) {
   return get_post_meta( $list_id, 'list_items', true);
 }
@@ -130,7 +131,6 @@ function delete_recipe_button($recipe_id){
   <?php
 }
 
-
 // NOTE: this should probably be in a front-end functions organization. 
 //[show_list_items]
 function show_list_items_func( $atts ) {
@@ -149,8 +149,8 @@ function show_list_items_func( $atts ) {
     <li class="list-item">
         <?php echo $recipe->post_title; ?> 
         <div class="list-actions">
-          <?php add_recipe_button($recipe->ID); ?>
-          <?php delete_recipe_button($recipe->ID); ?>
+          <?php //add_recipe_button($recipe->ID); ?>
+          <?php //delete_recipe_button($recipe->ID); ?>
       </div>
       </li>
     <?php } ?>

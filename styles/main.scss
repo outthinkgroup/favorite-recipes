@@ -19,6 +19,7 @@
     fill: currentColor;
     pointer-events: none;
     opacity: 0;
+
   }
   &[data-state="loading"] {
     opacity: 0.75;
