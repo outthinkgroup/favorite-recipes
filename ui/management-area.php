@@ -29,12 +29,7 @@ function my_favorites_endpoint_content(){
       <h2>My Recipe Lists</h2>
       
         <?php 
-        $listArgs = array(
-          'post_type' => 'lists',
-          'author' => $user_id,
-          'posts_per_page' => '-1'
-        );
-          $lists = get_posts($listArgs);
+          $lists = get_user_lists($user_id);
 
           if (!empty($lists)) { ?>
             <ul class='my-lists'>
@@ -46,7 +41,7 @@ function my_favorites_endpoint_content(){
               data-state="idle"
             >
               <?php show_list_title_and_count($list); ?>
-              <?php show_list_actions($list); ?> 
+              <?php show_list_actions($list->ID); ?> 
             </li>
           <?php } ?>
           </ul>
@@ -68,25 +63,54 @@ function my_favorites_endpoint_content(){
 helpers and html components
 */
 
+function get_user_lists($user_id){
+  $listArgs = array(
+    'post_type' => 'lists',
+    'author' => $user_id,
+    'posts_per_page' => '-1'
+  );
+  $lists = get_posts($listArgs);
+  return $lists;
+}
 
-function show_list_title_and_count($list){
+function show_list_title_and_count($list, $options=['edit'=>true, 'recipe_link'=>true]){
+  
   ?>
     <div class="recipe-title" style="--button-color:#efefef">
       <span class="count"><?php show_count($list->ID); ?></span>
       <span>
-        <a href="<?php echo get_the_permalink($list->ID); ?>">
+<?php if($options['recipe_link']): ?> 
+  <a href="<?php echo get_the_permalink($list->ID); ?>">
+  <?php endif; ?>
           <?php echo $list->post_title; ?> 
+<<<<<<< HEAD
         </a>
         <button class="minimal" data-action="rename-list"><i class="far fa-edit"></i> edit name</button>
+=======
+  <?php if($options['recipe_link']): ?> 
+    </a>
+  <?php endif; ?>  
+        <?php if($options['edit']):?>
+          <button class="minimal" data-action="rename-list">edit name</button>
+        <?php endif; ?>
+>>>>>>> 2d24480c143e559efe7b8016f97dbcd3870cf240
       </span>
 
     </div>
   <?php
 }
+<<<<<<< HEAD
 function show_list_actions($list){
   ?>
   <div class="list-actions">
     <a href="<?php echo get_permalink($list->ID); ?>" class="primary button view-list">View List</a>
+=======
+
+function show_list_actions($list_id){
+  ?>
+  <div class="list-actions">
+    <a class="primary button view-list" href="<?php echo get_the_permalink($list_id); ?>">View List</a>
+>>>>>>> 2d24480c143e559efe7b8016f97dbcd3870cf240
     <button type="button" data-action="delete-list" class="danger">Delete</button>
   </div>
   <?php
@@ -115,15 +139,7 @@ function get_count($list_id){
   }
 }
 
-function add_recipe_button($recipe_id){
-  global $post;
-  if($recipe_id === null){
-    $recipe_id = $post->ID;
-  }
-  ?>
-    <button type="button" class="add_item" data-recipe-id="<?php echo $recipe_id; ?>">Add</button>
-  <?php
-}
+
 
 function delete_recipe_button($recipe_id){
   global $post;

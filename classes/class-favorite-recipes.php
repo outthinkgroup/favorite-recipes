@@ -6,11 +6,15 @@ if(!class_exists( 'Favorite_Recipes' )) {
       add_action('wp_enqueue_scripts', array($this, 'enqueue_all'));
       $this->add_post_type();
       $this->create_management_area();
+      $this->button_shortcode();
       $this->add_endpoints();
+      
     }
     
     public function enqueue_all(){
-      if(!is_account_page()) return;
+      //TODO seperate the styles and scripts that need only to apply to the management page, and what should be global
+      // if(!is_account_page()) return;
+      
       wp_enqueue_script('recipe-list-script', FAVORITE_RECIPES_URL . 'dist/main.js', array(), true);
       wp_enqueue_style('recipe-list-styles', FAVORITE_RECIPES_URL . 'dist/main.css', '1.00' , 'all');
 
@@ -52,6 +56,9 @@ if(!class_exists( 'Favorite_Recipes' )) {
     function add_endpoints(){
       include_once FAVORITE_RECIPES_PATH . 'classes/class-list-endpoints.php';
       new List_Endpoints();
+    }
+    function button_shortcode(){
+      include_once FAVORITE_RECIPES_PATH . 'ui/add-recipe-to-list.php';
     }
   }
   new Favorite_Recipes();
