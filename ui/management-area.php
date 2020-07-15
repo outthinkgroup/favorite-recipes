@@ -54,7 +54,7 @@ function my_favorites_endpoint_content(){
           }
         ?>
         <div class="lists-action">
-          <button data-action="show-create-list">Create New List</button>
+          <button data-action="show-create-list"> + Create New List</button>
       </div>
     </div>
   </div>
@@ -77,17 +77,26 @@ function show_list_title_and_count($list){
         <a href="<?php echo get_the_permalink($list->ID); ?>">
           <?php echo $list->post_title; ?> 
         </a>
-        <button class="minimal" data-action="rename-list">edit name</button>
+        <button class="minimal" data-action="rename-list"><i class="far fa-edit"></i> edit name</button>
       </span>
 
     </div>
   <?php
 }
-function show_list_actions(){
+function show_list_actions($list){
   ?>
   <div class="list-actions">
-    <a class="primary button view-list">View List</a>
+    <a href="<?php echo get_permalink($list->ID); ?>" class="primary button view-list">View List</a>
     <button type="button" data-action="delete-list" class="danger">Delete</button>
+  </div>
+  <?php
+}
+
+function show_item_actions($item){
+  ?>
+  <div class="list-actions">
+    <?php add_recipe_button($item->ID); ?>
+    <?php delete_recipe_button($item->ID); ?>
   </div>
   <?php
 }
@@ -126,7 +135,6 @@ function delete_recipe_button($recipe_id){
   <?php
 }
 
-
 // NOTE: this should probably be in a front-end functions organization. 
 //[show_list_items]
 function show_list_items_func( $atts ) {
@@ -159,3 +167,16 @@ function show_list_items_func( $atts ) {
 	return ob_get_clean();;
 }
 add_shortcode( 'show_list_items', 'show_list_items_func' );
+
+//[show_item_actions]
+function show_item_actions_func( $atts ) {
+  global $post;
+  //$list_items = get_list_items( $post->ID );
+  //var_dump($list_items);
+  global $post;
+  ob_start(); 
+  show_item_actions($post->ID);
+  
+	return ob_get_clean();
+}
+add_shortcode( 'show_actions', 'show_item_actions_func' );
