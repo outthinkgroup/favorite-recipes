@@ -228,239 +228,104 @@ function getInputValueByForm(form) {
   }, {});
   return values;
 }
-},{}],"scripts/main.js":[function(require,module,exports) {
+},{}],"scripts/add-recipe-button.js":[function(require,module,exports) {
 "use strict";
 
 var _helpers = require("./helpers");
 
-window.addEventListener("DOMContentLoaded", initManagement);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function initManagement() {
-  if (!document.querySelector(".recipe-list-management-area")) return;
-  var list = document.querySelector(".my-lists");
-  addListItemActionHandlers(list);
-  var listBottom = document.querySelector(".lists-action");
-  addCreateListHandler(listBottom);
-} //HANDLERS AND API CALLS
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function addCreateListHandler(parent) {
-  console.log("object");
-  var showFormBtn = parent.querySelector("[data-action='show-create-list']");
-  showFormBtn.addEventListener("click", handleShowCreateListForm);
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+window.addEventListener("DOMContentLoaded", addRecipeToListButtonInit);
+
+function addRecipeToListButtonInit() {
+  var mainComponents = _toConsumableArray(document.querySelectorAll(".add-recipe-to-list"));
+
+  mainComponents.forEach(function (component) {
+    return perMainComponentDo(component);
+  });
 }
 
-function handleShowCreateListForm(e) {
-  var element = e.currentTarget;
-  var callback = handleAddList;
-  var formLabel = "List Name";
-  var btnText = "create";
-  (0, _helpers.replaceWithForm)({
-    element: element,
-    callback: callback,
-    formLabel: formLabel,
-    btnText: btnText,
-    replaceParent: false,
-    waitTillResolve: true
-  });
-} //ADD LIST
+function toggleOnOff(actionElement, parentElementSelector) {
+  var action = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "click";
+  actionElement.addEventListener(action, toggleState);
 
+  if (action === "click") {
+    document.body.addEventListener(action, toggleOff);
+  }
 
-function handleAddList(e) {
-  e.preventDefault();
+  function toggleState(e) {
+    var parentEl = e.target.closest(parentElementSelector);
+    var on = parentEl.dataset.state;
 
-  var _getInputValueByForm = (0, _helpers.getInputValueByForm)(e.target),
-      listName = _getInputValueByForm.index0;
-
-  var userId = getUserId();
-  var listParent = document.querySelector(".my-lists");
-  var listItemCopy = listParent.querySelector(".list-item").cloneNode(true);
-  listItemCopy.querySelector(".recipe-title a").innerText = listName;
-  listItemCopy.dataset.state = "loading";
-  listParent.prepend(listItemCopy);
-  addList(listName, userId).then(function (res) {
-    if (res.error) {
-      listItemCopy.dataset.state = "error";
+    if (on) {
+      delete parentEl.dataset.state;
     } else {
-      var id = res.data.id;
-      listItemCopy.dataset.listId = id;
-      listItemCopy.dataset.state = "idle";
+      parentEl.dataset.state = "on";
     }
+  }
+
+  function toggleOff(e) {
+    if (!e.target.closest(parentElementSelector)) {
+      delete actionElement.closest(parentElementSelector).dataset.state;
+    }
+  }
+}
+
+function addRecipeToList(_ref) {
+  var recipeId = _ref.recipeId,
+      listId = _ref.listId;
+  return (0, _helpers.useApi)("add-item", {
+    item_id: parseInt(recipeId),
+    list_id: listId
   });
 }
 
-function addList(listName, userId) {
-  var data = {
-    user_id: parseInt(userId),
-    title: listName
-  };
-  return (0, _helpers.useApi)("create-list", data);
-}
+function perMainComponentDo(component) {
+  var toggleButton = component.querySelector('[data-action="toggle-list"]');
+  toggleOnOff(toggleButton, ".add-recipe-to-list");
+  var list = component.querySelector(".button-lists");
+  list.addEventListener("click", handleRecipeListItemActionFromButton);
 
-function addListItemActionHandlers(list) {
-  list.addEventListener("click", executeListItemAction);
-
-  function executeListItemAction(e) {
-    var item = e.target;
-    var action = item.dataset.action;
-    if (!action) return;
+  function handleRecipeListItemActionFromButton(e) {
+    var clickedItem = e.target;
+    var button = clickedItem.closest("[data-action]");
+    var action = button.dataset.action;
 
     switch (action) {
-      case "delete-list":
-        handleDeleteList(item);
+      case "add-recipe":
+        addRecipeToList({
+          recipeId: component.dataset.recipeId,
+          listId: button.dataset.listId
+        });
+        plusOneCountFor(button.dataset.listId);
         break;
 
-      case "rename-list":
-        handleRenameListBtnClick(item);
-    }
-  }
-} //DELETE LIST
-
-
-function handleDeleteList(element) {
-  var list = element.closest(".list-item");
-  var listId = list.dataset.listId;
-  var parentElement = list.parentElement;
-  var userId = getUserId();
-  list.dataset.state = "loading";
-  var response = deleteList(listId, userId).then(function (res) {
-    if (res.error) {
-      list.dataset.state = "error";
-    } else {
-      parentElement.removeChild(list);
-    }
-  });
-}
-
-function deleteList(listId, userId) {
-  var data = {
-    list_id: parseInt(listId),
-    user_id: parseInt(userId)
-  };
-  return (0, _helpers.useApi)("delete-list", data);
-} //RENAME LIST
-
-
-function handleRenameListBtnClick(element) {
-  var titleEl = element.closest(".list-item").querySelector(".recipe-title a");
-  (0, _helpers.replaceWithForm)({
-    element: element,
-    callback: handleRenameRecipe,
-    btnText: "rename",
-    replaceParent: true,
-    changeInnerTextOfEl: ".recipe-title a"
-  });
-}
-
-function handleRenameRecipe(e, parent) {
-  e.preventDefault();
-
-  var _getInputValueByForm2 = (0, _helpers.getInputValueByForm)(e.target),
-      title = _getInputValueByForm2.index0;
-
-  var list = e.target.closest(".list-item");
-  var list_id = list.dataset.listId;
-  var titleEl = parent.querySelector("a");
-  list.dataset.state = "loading";
-  (0, _helpers.useApi)("rename-list", {
-    title: title,
-    list_id: list_id
-  }).then(function (res) {
-    if (res.error) {
-      console.log(res.error);
-      list.dataset.state = "error";
-    } else {
-      console.log("ran");
-      list.dataset.state = "idle";
-    }
-  });
-} //HANDLES ADDING ITEMS TO A LIST
-//THIS MAY NEED TO BE ADDED TO A NEW LIST
-// Jul 14, 2020 - Joseph changed this to accommodate his staging area.
-
-
-function getUserId() {
-  return document.querySelector("[data-user-id]").dataset.userId;
-}
-},{"./helpers":"scripts/helpers.js"}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
-var bundleURL = null;
-
-function getBundleURLCached() {
-  if (!bundleURL) {
-    bundleURL = getBundleURL();
-  }
-
-  return bundleURL;
-}
-
-function getBundleURL() {
-  // Attempt to find the URL of the current script and use that as the base URL
-  try {
-    throw new Error();
-  } catch (err) {
-    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
-
-    if (matches) {
-      return getBaseURL(matches[0]);
+      default:
+        console.log("no action was given");
+        break;
     }
   }
 
-  return '/';
-}
-
-function getBaseURL(url) {
-  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
-}
-
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-},{}],"node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
-var bundle = require('./bundle-url');
-
-function updateLink(link) {
-  var newLink = link.cloneNode();
-
-  newLink.onload = function () {
-    link.remove();
-  };
-
-  newLink.href = link.href.split('?')[0] + '?' + Date.now();
-  link.parentNode.insertBefore(newLink, link.nextSibling);
-}
-
-var cssTimeout = null;
-
-function reloadCSS() {
-  if (cssTimeout) {
-    return;
+  function plusOneCountFor(listId) {
+    var allListWithID = document.querySelectorAll("[data-list-id=\"".concat(listId, "\"]"));
+    allListWithID.forEach(function (list) {
+      var countEl = list.querySelector(".recipe-title .count");
+      var updatedCount = parseInt(countEl.innerText) + 1;
+      countEl.innerText = updatedCount;
+    });
   }
-
-  cssTimeout = setTimeout(function () {
-    var links = document.querySelectorAll('link[rel="stylesheet"]');
-
-    for (var i = 0; i < links.length; i++) {
-      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
-        updateLink(links[i]);
-      }
-    }
-
-    cssTimeout = null;
-  }, 50);
 }
-
-module.exports = reloadCSS;
-},{"./bundle-url":"node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"styles/main.scss":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"main.js":[function(require,module,exports) {
-"use strict";
-
-require("./scripts/main.js");
-
-require("./styles/main.scss");
-},{"./scripts/main.js":"scripts/main.js","./styles/main.scss":"styles/main.scss"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./helpers":"scripts/helpers.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -664,5 +529,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["node_modules/parcel-bundler/src/builtins/hmr-runtime.js","main.js"], null)
-//# sourceMappingURL=/main.js.map
+},{}]},{},["node_modules/parcel-bundler/src/builtins/hmr-runtime.js","scripts/add-recipe-button.js"], null)
+//# sourceMappingURL=/scripts/add-recipe-button.js.map
