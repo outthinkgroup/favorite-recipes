@@ -49,7 +49,7 @@ export function handleAddList(e) {
   listItemCopy.dataset.state = "loading";
   addList(listName, userId).then((res) => {
     if (res.error) {
-      listItemCopy.dataset.state = "error";
+      handleError(res.error, listItemCopy);
     } else {
       const { list_id, link } = res.data;
       const listItem = updateNewListItemWith({
@@ -110,7 +110,7 @@ function handleDeleteList(element) {
   list.dataset.state = "loading";
   deleteList(listId, userId).then((res) => {
     if (res.error) {
-      list.dataset.state = "error";
+      handleError(res.error, list);
     } else {
       parentElement.removeChild(list);
     }
@@ -123,9 +123,6 @@ function deleteList(listId, userId) {
 
 //RENAME LIST
 function handleRenameListBtnClick(element) {
-  const titleEl = element
-    .closest(".list-item")
-    .querySelector(".recipe-title a");
   replaceWithForm({
     element,
     callback: handleRenameRecipe,
@@ -139,14 +136,11 @@ function handleRenameRecipe(e, parent) {
   const { index0: title } = getInputValueByForm(e.target);
   const list = e.target.closest(".list-item");
   const list_id = list.dataset.listId;
-  const titleEl = parent.querySelector("a");
   list.dataset.state = "loading";
   useApi("rename-list", { title, list_id }).then((res) => {
     if (res.error) {
-      console.log(res.error);
-      list.dataset.state = "error";
+      handleError(res.error, list);
     } else {
-      console.log("ran");
       list.dataset.state = "idle";
     }
   });

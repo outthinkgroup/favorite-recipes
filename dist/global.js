@@ -131,6 +131,7 @@ exports.toggleOnOff = toggleOnOff;
 exports.getUserId = getUserId;
 exports.updateAllListsWithNewList = updateAllListsWithNewList;
 exports.updateAllListsWithNewCount = updateAllListsWithNewCount;
+exports.handleError = handleError;
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -307,6 +308,14 @@ function updateAllListsWith(callback) {
     callback(list);
   });
 }
+
+function handleError(err, item) {
+  if (err.message) {
+    alert(err.message);
+  }
+
+  item.dataset.state = "error";
+}
 },{}],"scripts/account-page.js":[function(require,module,exports) {
 "use strict";
 
@@ -362,7 +371,7 @@ function handleAddList(e) {
   listItemCopy.dataset.state = "loading";
   addList(listName, userId).then(function (res) {
     if (res.error) {
-      listItemCopy.dataset.state = "error";
+      handleError(res.error, listItemCopy);
     } else {
       var _res$data = res.data,
           list_id = _res$data.list_id,
@@ -434,7 +443,7 @@ function handleDeleteList(element) {
   list.dataset.state = "loading";
   deleteList(listId, userId).then(function (res) {
     if (res.error) {
-      list.dataset.state = "error";
+      handleError(res.error, list);
     } else {
       parentElement.removeChild(list);
     }
@@ -451,7 +460,6 @@ function deleteList(listId, userId) {
 
 
 function handleRenameListBtnClick(element) {
-  var titleEl = element.closest(".list-item").querySelector(".recipe-title a");
   (0, _helpers.replaceWithForm)({
     element: element,
     callback: handleRenameRecipe,
@@ -469,17 +477,14 @@ function handleRenameRecipe(e, parent) {
 
   var list = e.target.closest(".list-item");
   var list_id = list.dataset.listId;
-  var titleEl = parent.querySelector("a");
   list.dataset.state = "loading";
   (0, _helpers.useApi)("rename-list", {
     title: title,
     list_id: list_id
   }).then(function (res) {
     if (res.error) {
-      console.log(res.error);
-      list.dataset.state = "error";
+      handleError(res.error, list);
     } else {
-      console.log("ran");
       list.dataset.state = "idle";
     }
   });
@@ -553,7 +558,7 @@ function handleAddRecipeToList(listItem, component) {
   };
   addRecipeToList(data).then(function (res) {
     if (res.error) {
-      listItem.dataset.state = "error";
+      (0, _helpers.handleError)(res.error, listItem);
     } else {
       listItem.dataset.state = "idle";
       (0, _helpers.updateAllListsWithNewCount)({

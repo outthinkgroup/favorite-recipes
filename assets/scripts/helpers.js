@@ -153,3 +153,9 @@ function updateAllListsWith(callback) {
     callback(list);
   });
 }
+export function handleError(err, item) {
+  if (err.message) {
+    alert(err.message);
+  }
+  item.dataset.state = "error";
+}

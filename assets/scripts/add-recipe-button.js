@@ -1,5 +1,10 @@
-import { useApi, toggleOnOff, updateAllListsWithNewCount } from "./helpers";
-import { addCreateListHandler, handleShowCreateListForm } from "./account-page";
+import {
+  useApi,
+  toggleOnOff,
+  updateAllListsWithNewCount,
+  handleError,
+} from "./helpers";
+import { handleShowCreateListForm } from "./account-page";
 window.addEventListener("DOMContentLoaded", addRecipeToListButtonInit);
 function addRecipeToListButtonInit() {
   const mainComponents = [...document.querySelectorAll(".add-recipe-to-list")];
@@ -42,7 +47,7 @@ function handleAddRecipeToList(listItem, component) {
   };
   addRecipeToList(data).then((res) => {
     if (res.error) {
-      listItem.dataset.state = "error";
+      handleError(res.error, listItem);
     } else {
       listItem.dataset.state = "idle";
       updateAllListsWithNewCount({
