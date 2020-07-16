@@ -25,11 +25,11 @@ function my_favorites_endpoint_content(){
   <div class="recipe-list-management-area"
     data-user-id="<?php echo $user_id; ?>"
   >
-    <div class="lists">
-      <h2>My Recipe Lists</h2>
-      <?php 
+  <h2>My Recipe Lists</h2>
+  <?php 
       $lists = get_user_lists($user_id);
       ?> 
+    <div class="lists">
       <ul class='my-lists'> 
       <?php  
         if (!empty($lists)) { 
@@ -42,9 +42,7 @@ function my_favorites_endpoint_content(){
         show_list_item();
         ?> 
       </ul>
-      <div class="lists-action">
-        <button data-action="show-create-list"> + Create New List</button>
-      </div>
+      <?php show_create_list_area(); ?> 
     </div>
   </div>
   <?php 
@@ -80,8 +78,15 @@ function show_list_item( $list=null ){
   </li> 
   <?php
 }
+function show_create_list_area(){
+  ?> 
+  <div class="lists-action">
+    <button data-action="show-create-list" class="icon-button with-text icon-left"> <span class="icon"><?php get_icon('plus', 'solid');?></span> <span class="text">Create New List</span></button>
+  </div>
+  <?php  
+}
 function show_list_title_and_count($list, $options=['edit'=>true, 'recipe_link'=>true]){
-  
+  $titleEl = $options['recipe_link'] ? 'a' : 'span'
   ?>
     <div class="recipe-title" style="--button-color:#efefef">
       <span class="count">
@@ -94,9 +99,14 @@ function show_list_title_and_count($list, $options=['edit'=>true, 'recipe_link'=
         ?>
       </span>
       <span>
-      <?php if($options['recipe_link']): ?> 
-        <a href="<?php if($list) echo get_the_permalink($list->ID); ?>">
-        <?php endif; ?>
+      
+         
+          <?php if($options['recipe_link']):?> 
+          <a class="title-el" href="<?php if($list) echo get_the_permalink($list->ID); ?>" >
+          <?php else: ?> 
+          <span class="title-el">
+          <?php endif; ?>  
+       
           <?php 
             if($list){
               echo $list->post_title; 
@@ -104,11 +114,15 @@ function show_list_title_and_count($list, $options=['edit'=>true, 'recipe_link'=
               echo 'New List';
             }
           ?> 
-        <?php if($options['recipe_link']): ?> 
-        </a>
-        <?php endif; ?>  
+         
+          <?php if($options['recipe_link']):?> 
+          </a>
+          <?php else: ?> 
+          </span>
+          <?php endif; ?>
+        
         <?php if($options['edit']):?>
-          <button class="minimal" data-action="rename-list">edit name</button>
+          <button class="minimal icon-button" data-action="rename-list"><span class="icon"><?php get_icon('edit'); ?></span></button>
         <?php endif; ?>
       </span>
     </div>
@@ -120,7 +134,7 @@ function show_list_actions($list){
   ?>
   <div class="list-actions">
     <a class="primary button view-list" href="<?php if($list) echo get_the_permalink($list_id); ?>">View List</a>
-    <button type="button" data-action="delete-list" class="danger">Delete</button>
+    <button type="button" data-action="delete-list" class="danger icon-button"><span class="icon"><?php get_icon('delete'); ?></span></button>
   </div>
   <?php
 }

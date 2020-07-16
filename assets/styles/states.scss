@@ -1,0 +1,12 @@
+///list Item states for idle, error, and loading
+%states {
+  &[data-state="loading"] {
+    opacity: 0.75;
+  }
+  &[data-state="error"] {
+    background: var(--danger-light, var(--danger, #df9393));
+  }
+  &[data-state="hidden"] {
+    display: none;
+  }
+}

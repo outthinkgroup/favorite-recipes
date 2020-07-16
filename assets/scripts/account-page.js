@@ -1,4 +1,10 @@
-import { replaceWithForm, useApi, getInputValueByForm } from "./helpers";
+import {
+  replaceWithForm,
+  useApi,
+  getInputValueByForm,
+  getUserId,
+  updateAllLists,
+} from "./helpers";
 
 window.addEventListener("DOMContentLoaded", initManagement);
 
@@ -13,19 +19,18 @@ function initManagement() {
 }
 
 //HANDLERS AND API CALLS
-function addCreateListHandler(parent) {
+export function addCreateListHandler(parent) {
   const showFormBtn = parent.querySelector(`[data-action='show-create-list']`);
-  showFormBtn.addEventListener("click", handleShowCreateListForm);
+  showFormBtn.addEventListener("click", () =>
+    handleShowCreateListForm(showFormBtn)
+  );
 }
-function handleShowCreateListForm(e) {
-  const element = e.currentTarget;
+export function handleShowCreateListForm(element) {
   const callback = handleAddList;
-  const formLabel = "List Name";
   const btnText = "create";
   replaceWithForm({
     element,
     callback,
-    formLabel,
     btnText,
     replaceParent: false,
     waitTillResolve: true,
@@ -33,39 +38,44 @@ function handleShowCreateListForm(e) {
 }
 
 //ADD LIST
-function handleAddList(e) {
+export function handleAddList(e) {
   e.preventDefault();
   const { index0: listName } = getInputValueByForm(e.target);
   const userId = getUserId();
-  const listParent = document.querySelector(".my-lists");
+  const listParent = e.target
+    .closest(".lists, .add-recipe-to-list")
+    .querySelector("ul");
   const listItemCopy = createNewListItem(listParent, listName);
   listItemCopy.dataset.state = "loading";
   addList(listName, userId).then((res) => {
     if (res.error) {
       listItemCopy.dataset.state = "error";
     } else {
-      const { list_id, link, title } = res.data;
+      const { list_id, link } = res.data;
       const listItem = updateNewListItemWith({
         listItemCopy,
         list_id,
         link,
-        title,
       });
       listItem.dataset.state = "idle";
+      // this is for the recipe button
+      if (listParent.classList.contains("lists")) {
+        updateAllLists(listItem, listParent);
+      }
     }
   });
 }
+
 function createNewListItem(listParent, listName) {
-  const listItemCopy = listParent.querySelector(".list-item").cloneNode(true);
-  listItemCopy.querySelector(".recipe-title a").innerText = listName;
+  const listItemCopy = listParent.querySelector("li").cloneNode(true);
+  listItemCopy.querySelector(".recipe-title .title-el").innerText = listName;
   listParent.prepend(listItemCopy);
   return listItemCopy;
 }
-function updateNewListItemWith({ listItemCopy, list_id, link, title }) {
+function updateNewListItemWith({ listItemCopy, list_id, link }) {
   listItemCopy.dataset.listId = list_id;
-  const titleEl = listItemCopy.querySelector(".recipe-title a");
-  titleEl.setAttribute("href", link);
-  titleEl.innerText = title;
+  const titleEl = listItemCopy.querySelector(".recipe-title .title-el");
+  if (titleEl.hasAttribute("href")) titleEl.setAttribute("href", link);
   return listItemCopy;
 }
 
@@ -146,7 +156,3 @@ function handleRenameRecipe(e, parent) {
 //THIS MAY NEED TO BE ADDED TO A NEW LIST
 
 // Jul 14, 2020 - Joseph changed this to accommodate his staging area.
-
-function getUserId() {
-  return document.querySelector("[data-user-id]").dataset.userId;
-}

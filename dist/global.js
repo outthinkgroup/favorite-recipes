@@ -127,6 +127,9 @@ exports.replaceWithForm = replaceWithForm;
 exports.useApi = useApi;
 exports.getInputValue = getInputValue;
 exports.getInputValueByForm = getInputValueByForm;
+exports.toggleOnOff = toggleOnOff;
+exports.getUserId = getUserId;
+exports.updateAllLists = updateAllLists;
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -169,27 +172,37 @@ function replaceWithForm(_ref) {
   var form = document.createElement("form");
   form.classList.add("generated-inline");
   var parent = element.parentElement;
-  var changingEl = parent.querySelector(changeInnerTextOfEl);
-  form.addEventListener("submit", function (e) {
-    callback(e, parent);
+  var changingEl = changeInnerTextOfEl && parent.querySelector(changeInnerTextOfEl);
+  form.addEventListener("submit", handleSubmit);
+  form.innerHTML = "\n    <input type=\"text\" class=\"small-inline-input\" value=\"".concat((changeInnerTextOfEl ? changingEl.innerHTML : "&nbsp;").trim(), "\"/> \n    <button type=\"submit\">").concat(btnText, "</button>\n    ");
 
+  if (replaceParent === false || !replaceParent) {
+    element.replaceWith(form);
+  } else {
+    parent.replaceWith(form);
+  }
+
+  form.elements[0].focus();
+  clickOutside(form.parentElement, formReset);
+
+  function handleSubmit(e) {
+    callback(e, parent);
+    formReset();
+
+    if (changeInnerTextOfEl) {
+      var newVal = form.querySelector(".small-inline-input").value;
+      changingEl.innerText = newVal;
+    }
+  }
+
+  function formReset() {
     if (!replaceParent) {
       form.replaceWith(element);
     } else {
       form.replaceWith(parent);
     }
 
-    if (changeInnerTextOfEl) {
-      var newVal = form.querySelector(".small-inline-input").value;
-      changingEl.innerText = newVal;
-    }
-  });
-  form.innerHTML = "\n    <input type=\"text\" placeholder=\"".concat((changeInnerTextOfEl ? changingEl.innerHTML : "&nbsp;").trim(), "\" class=\"small-inline-input\" /> \n    <button type=\"submit\">").concat(btnText, "</button>\n    ");
-
-  if (replaceParent === false || !replaceParent) {
-    element.replaceWith(form);
-  } else {
-    parent.replaceWith(form);
+    form.removeEventListener("submit", handleSubmit);
   }
 }
 
@@ -225,10 +238,242 @@ function getInputValueByForm(form) {
   }, {});
   return values;
 }
-},{}],"scripts/add-recipe-button.js":[function(require,module,exports) {
+
+function toggleOnOff(actionElement, parentElementSelector) {
+  var action = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "click";
+  actionElement.addEventListener(action, toggleState);
+
+  if (action === "click") {
+    document.body.addEventListener(action, toggleOff);
+  }
+
+  function toggleState(e) {
+    var parentEl = e.target.closest(parentElementSelector);
+    var on = parentEl.dataset.state;
+
+    if (on) {
+      delete parentEl.dataset.state;
+    } else {
+      parentEl.dataset.state = "on";
+    }
+  }
+
+  function toggleOff(e) {
+    if (document.contains(e.target) && !actionElement.closest(parentElementSelector).contains(e.target)) {
+      delete actionElement.closest(parentElementSelector).dataset.state;
+    }
+  }
+}
+
+function getUserId() {
+  return WP.userId;
+}
+
+function clickOutside(element, callback) {
+  document.body.addEventListener("click", runCallBack);
+
+  function runCallBack(e) {
+    if (!element) return;
+
+    if (document.contains(e.target) && !element.contains(e.target) && element !== e.target) {
+      callback();
+    }
+  }
+}
+
+function updateAllLists(newListItem, parenList) {
+  _toConsumableArray(document.querySelectorAll(".add-recipe-to-list")).forEach(function (parentEl) {
+    var clone = newListItem.cloneNode(true);
+    var list = parentEl.querySelector("ul");
+    if (parenList === list) return;
+    list.prepend(clone);
+  });
+}
+},{}],"scripts/account-page.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.addCreateListHandler = addCreateListHandler;
+exports.handleShowCreateListForm = handleShowCreateListForm;
+exports.handleAddList = handleAddList;
+
+var _helpers = require("./helpers");
+
+window.addEventListener("DOMContentLoaded", initManagement);
+
+function initManagement() {
+  if (!document.querySelector(".recipe-list-management-area")) return;
+  var list = document.querySelector(".my-lists");
+  addListItemActionHandlers(list);
+  var listBottom = document.querySelector(".lists-action");
+  addCreateListHandler(listBottom);
+} //HANDLERS AND API CALLS
+
+
+function addCreateListHandler(parent) {
+  var showFormBtn = parent.querySelector("[data-action='show-create-list']");
+  showFormBtn.addEventListener("click", function () {
+    return handleShowCreateListForm(showFormBtn);
+  });
+}
+
+function handleShowCreateListForm(element) {
+  var callback = handleAddList;
+  var btnText = "create";
+  (0, _helpers.replaceWithForm)({
+    element: element,
+    callback: callback,
+    btnText: btnText,
+    replaceParent: false,
+    waitTillResolve: true
+  });
+} //ADD LIST
+
+
+function handleAddList(e) {
+  e.preventDefault();
+
+  var _getInputValueByForm = (0, _helpers.getInputValueByForm)(e.target),
+      listName = _getInputValueByForm.index0;
+
+  var userId = (0, _helpers.getUserId)();
+  var listParent = e.target.closest(".lists, .add-recipe-to-list").querySelector("ul");
+  var listItemCopy = createNewListItem(listParent, listName);
+  listItemCopy.dataset.state = "loading";
+  addList(listName, userId).then(function (res) {
+    if (res.error) {
+      listItemCopy.dataset.state = "error";
+    } else {
+      var _res$data = res.data,
+          list_id = _res$data.list_id,
+          link = _res$data.link;
+      var listItem = updateNewListItemWith({
+        listItemCopy: listItemCopy,
+        list_id: list_id,
+        link: link
+      });
+      listItem.dataset.state = "idle"; // this is for the recipe button
+
+      if (listParent.classList.contains("lists")) {
+        (0, _helpers.updateAllLists)(listItem, listParent);
+      }
+    }
+  });
+}
+
+function createNewListItem(listParent, listName) {
+  var listItemCopy = listParent.querySelector("li").cloneNode(true);
+  listItemCopy.querySelector(".recipe-title .title-el").innerText = listName;
+  listParent.prepend(listItemCopy);
+  return listItemCopy;
+}
+
+function updateNewListItemWith(_ref) {
+  var listItemCopy = _ref.listItemCopy,
+      list_id = _ref.list_id,
+      link = _ref.link;
+  listItemCopy.dataset.listId = list_id;
+  var titleEl = listItemCopy.querySelector(".recipe-title .title-el");
+  if (titleEl.hasAttribute("href")) titleEl.setAttribute("href", link);
+  return listItemCopy;
+}
+
+function addList(listName, userId) {
+  var data = {
+    user_id: parseInt(userId),
+    title: listName
+  };
+  return (0, _helpers.useApi)("create-list", data);
+}
+
+function addListItemActionHandlers(list) {
+  list.addEventListener("click", executeListItemAction);
+
+  function executeListItemAction(e) {
+    var item = e.target;
+    var action = item.dataset.action;
+    if (!action) return;
+
+    switch (action) {
+      case "delete-list":
+        handleDeleteList(item);
+        break;
+
+      case "rename-list":
+        handleRenameListBtnClick(item);
+    }
+  }
+} //DELETE LIST
+
+
+function handleDeleteList(element) {
+  var list = element.closest(".list-item");
+  var listId = list.dataset.listId;
+  var parentElement = list.parentElement;
+  var userId = (0, _helpers.getUserId)();
+  list.dataset.state = "loading";
+  deleteList(listId, userId).then(function (res) {
+    if (res.error) {
+      list.dataset.state = "error";
+    } else {
+      parentElement.removeChild(list);
+    }
+  });
+}
+
+function deleteList(listId, userId) {
+  var data = {
+    list_id: parseInt(listId),
+    user_id: parseInt(userId)
+  };
+  return (0, _helpers.useApi)("delete-list", data);
+} //RENAME LIST
+
+
+function handleRenameListBtnClick(element) {
+  var titleEl = element.closest(".list-item").querySelector(".recipe-title a");
+  (0, _helpers.replaceWithForm)({
+    element: element,
+    callback: handleRenameRecipe,
+    btnText: "rename",
+    replaceParent: true,
+    changeInnerTextOfEl: ".recipe-title a"
+  });
+}
+
+function handleRenameRecipe(e, parent) {
+  e.preventDefault();
+
+  var _getInputValueByForm2 = (0, _helpers.getInputValueByForm)(e.target),
+      title = _getInputValueByForm2.index0;
+
+  var list = e.target.closest(".list-item");
+  var list_id = list.dataset.listId;
+  var titleEl = parent.querySelector("a");
+  list.dataset.state = "loading";
+  (0, _helpers.useApi)("rename-list", {
+    title: title,
+    list_id: list_id
+  }).then(function (res) {
+    if (res.error) {
+      console.log(res.error);
+      list.dataset.state = "error";
+    } else {
+      console.log("ran");
+      list.dataset.state = "idle";
+    }
+  });
+} //HANDLES ADDING ITEMS TO A LIST
+//THIS MAY NEED TO BE ADDED TO A NEW LIST
+// Jul 14, 2020 - Joseph changed this to accommodate his staging area.
+},{"./helpers":"scripts/helpers.js"}],"scripts/add-recipe-button.js":[function(require,module,exports) {
 "use strict";
 
 var _helpers = require("./helpers");
+
+var _accountPage = require("./account-page");
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -252,65 +497,43 @@ function addRecipeToListButtonInit() {
   });
 }
 
-function toggleOnOff(actionElement, parentElementSelector) {
-  var action = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "click";
-  actionElement.addEventListener(action, toggleState);
-
-  if (action === "click") {
-    document.body.addEventListener(action, toggleOff);
-  }
-
-  function toggleState(e) {
-    var parentEl = e.target.closest(parentElementSelector);
-    var on = parentEl.dataset.state;
-
-    if (on) {
-      delete parentEl.dataset.state;
-    } else {
-      parentEl.dataset.state = "on";
-    }
-  }
-
-  function toggleOff(e) {
-    if (!e.target.closest(parentElementSelector)) {
-      delete actionElement.closest(parentElementSelector).dataset.state;
-    }
-  }
-}
-
-function addRecipeToList(_ref) {
-  var recipeId = _ref.recipeId,
-      listId = _ref.listId;
-  return (0, _helpers.useApi)("add-item", {
-    item_id: parseInt(recipeId),
-    list_id: listId
-  });
-}
-
 function perMainComponentDo(component) {
   var toggleButton = component.querySelector('[data-action="toggle-list"]');
-  toggleOnOff(toggleButton, ".add-recipe-to-list");
+  (0, _helpers.toggleOnOff)(toggleButton, ".add-recipe-to-list");
   var list = component.querySelector(".button-lists");
   list.addEventListener("click", handleRecipeListItemActionFromButton);
 
   function handleRecipeListItemActionFromButton(e) {
     var clickedItem = e.target;
     var button = clickedItem.closest("[data-action]");
-    var action = button.dataset.action;
+    var action = button && button.dataset.action;
+    if (!action) return;
 
     switch (action) {
       case "add-recipe":
         addRecipeToList({
           recipeId: component.dataset.recipeId,
-          listId: button.dataset.listId
+          listId: button.parentElement.dataset.listId
         });
-        plusOneCountFor(button.dataset.listId);
+        plusOneCountFor(button.parentElement.dataset.listId);
         break;
+
+      case "show-create-list":
+        (0, _accountPage.handleShowCreateListForm)(button);
 
       default:
         console.log("no action was given");
         break;
     }
+  }
+
+  function addRecipeToList(_ref) {
+    var recipeId = _ref.recipeId,
+        listId = _ref.listId;
+    return (0, _helpers.useApi)("add-item", {
+      item_id: parseInt(recipeId),
+      list_id: listId
+    });
   }
 
   function plusOneCountFor(listId) {
@@ -322,7 +545,7 @@ function perMainComponentDo(component) {
     });
   }
 }
-},{"./helpers":"scripts/helpers.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+},{"./helpers":"scripts/helpers.js","./account-page":"scripts/account-page.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
 function getBundleURLCached() {
@@ -428,7 +651,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49843" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59903" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -1,5 +1,5 @@
 //main.scss
-
+@import "states.scss";
 .my-lists {
   list-style: none;
   padding: 0;
@@ -19,16 +19,11 @@
     fill: currentColor;
     pointer-events: none;
     opacity: 0;
+    &.icon-button {
+      font-size: 18px;
+    }
   }
-  &[data-state="loading"] {
-    opacity: 0.75;
-  }
-  &[data-state="error"] {
-    background: #df9393;
-  }
-  &[data-state="hidden"] {
-    display: none;
-  }
+  @extend %states;
 }
 .recipe-title {
   display: flex;
@@ -58,12 +53,34 @@
   }
 }
 
-.my-lists .list-item {
-  button,
-  a.button {
-    padding: 6px 15px;
-    font-size: 12px;
-    font-weight: bold;
+.lists {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  .list-item {
+    button,
+    a.button {
+      text-transform: capitalize;
+      padding: 6px 15px;
+      font-size: 12px;
+      font-weight: bold;
+      &.icon-button {
+        padding: 0;
+        width: var(--button-size, 28px);
+        height: var(--button-size, 28px);
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+    a.primary {
+      background: #efefef;
+      color: #888;
+    }
+    button[data-action="rename-list"] {
+      --button-size: 30px;
+    }
+    button[data-action="delete-list"] {
+      margin-left: 20px;
+    }
   }
 }
 .list-item:hover {
@@ -73,43 +90,16 @@
     &:hover {
       background: #f0f0f0;
     }
-  }
-}
-
-.lists-action {
-  background: white;
-  display: flex;
-  border-bottom: 1px solid #f0f0f0;
-  > button {
-    appearance: none;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    color: #888;
-    font-weight: 400;
-    font-size: 14px;
-    border-radius: 0px;
-    border: none;
-
-    &:hover {
-      background: #efefef;
+    &.danger:hover {
+      background: var(--danger, #ef5753);
+      color: white;
     }
   }
 }
 
-form.generated-inline {
-  display: inline-flex;
-  width: 100%;
-  input {
-    width: 100%;
-  }
-  button {
-    opacity: 1;
-    pointer-events: all;
-    background: var(--button-color);
-    width: auto;
-  }
-}
+//create list button and form
+//lists-action moved to global.scss
+
 button.button-minimal {
   appearance: none;
   background: transparent;
@@ -117,45 +107,5 @@ button.button-minimal {
   margin: 0;
   &:hover {
     background: #efefef;
-  }
-}
-.add-recipe-to-list {
-  position: relative;
-  > button {
-    width: 100%;
-    border-radius: 3px;
-    padding: 0;
-    display: flex;
-    justify-content: space-between;
-    * {
-      padding: 12px 15px;
-      text-align: center;
-    }
-  }
-  .button-lists {
-    position: absolute;
-    top: calc(100% + 2px);
-    left: 0;
-    width: 100%;
-    background: white;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-    display: none;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: 14px;
-    border-radius: 3px;
-    button {
-      padding: 5px;
-      * {
-        font-size: 14px;
-        color: black;
-      }
-    }
-  }
-  &[data-state] {
-    .button-lists {
-      display: unset;
-    }
   }
 }

@@ -1,33 +1,9 @@
-import { useApi } from "./helpers";
+import { useApi, toggleOnOff } from "./helpers";
+import { addCreateListHandler, handleShowCreateListForm } from "./account-page";
 window.addEventListener("DOMContentLoaded", addRecipeToListButtonInit);
 function addRecipeToListButtonInit() {
   const mainComponents = [...document.querySelectorAll(".add-recipe-to-list")];
   mainComponents.forEach((component) => perMainComponentDo(component));
-}
-
-function toggleOnOff(actionElement, parentElementSelector, action = "click") {
-  actionElement.addEventListener(action, toggleState);
-  if (action === "click") {
-    document.body.addEventListener(action, toggleOff);
-  }
-  function toggleState(e) {
-    const parentEl = e.target.closest(parentElementSelector);
-    const on = parentEl.dataset.state;
-    if (on) {
-      delete parentEl.dataset.state;
-    } else {
-      parentEl.dataset.state = "on";
-    }
-  }
-  function toggleOff(e) {
-    if (!e.target.closest(parentElementSelector)) {
-      delete actionElement.closest(parentElementSelector).dataset.state;
-    }
-  }
-}
-
-function addRecipeToList({ recipeId, listId }) {
-  return useApi("add-item", { item_id: parseInt(recipeId), list_id: listId });
 }
 
 function perMainComponentDo(component) {
@@ -40,20 +16,27 @@ function perMainComponentDo(component) {
   function handleRecipeListItemActionFromButton(e) {
     const clickedItem = e.target;
     const button = clickedItem.closest("[data-action]");
-    const action = button.dataset.action;
+    const action = button && button.dataset.action;
+    if (!action) return;
 
     switch (action) {
       case "add-recipe":
         addRecipeToList({
           recipeId: component.dataset.recipeId,
-          listId: button.dataset.listId,
+          listId: button.parentElement.dataset.listId,
         });
-        plusOneCountFor(button.dataset.listId);
+        plusOneCountFor(button.parentElement.dataset.listId);
         break;
+      case "show-create-list":
+        handleShowCreateListForm(button);
       default:
         console.log("no action was given");
         break;
     }
+  }
+
+  function addRecipeToList({ recipeId, listId }) {
+    return useApi("add-item", { item_id: parseInt(recipeId), list_id: listId });
   }
 
   function plusOneCountFor(listId) {

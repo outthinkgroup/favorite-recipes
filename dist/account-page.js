@@ -127,6 +127,9 @@ exports.replaceWithForm = replaceWithForm;
 exports.useApi = useApi;
 exports.getInputValue = getInputValue;
 exports.getInputValueByForm = getInputValueByForm;
+exports.toggleOnOff = toggleOnOff;
+exports.getUserId = getUserId;
+exports.updateAllLists = updateAllLists;
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -169,27 +172,37 @@ function replaceWithForm(_ref) {
   var form = document.createElement("form");
   form.classList.add("generated-inline");
   var parent = element.parentElement;
-  var changingEl = parent.querySelector(changeInnerTextOfEl);
-  form.addEventListener("submit", function (e) {
-    callback(e, parent);
+  var changingEl = changeInnerTextOfEl && parent.querySelector(changeInnerTextOfEl);
+  form.addEventListener("submit", handleSubmit);
+  form.innerHTML = "\n    <input type=\"text\" class=\"small-inline-input\" value=\"".concat((changeInnerTextOfEl ? changingEl.innerHTML : "&nbsp;").trim(), "\"/> \n    <button type=\"submit\">").concat(btnText, "</button>\n    ");
 
+  if (replaceParent === false || !replaceParent) {
+    element.replaceWith(form);
+  } else {
+    parent.replaceWith(form);
+  }
+
+  form.elements[0].focus();
+  clickOutside(form.parentElement, formReset);
+
+  function handleSubmit(e) {
+    callback(e, parent);
+    formReset();
+
+    if (changeInnerTextOfEl) {
+      var newVal = form.querySelector(".small-inline-input").value;
+      changingEl.innerText = newVal;
+    }
+  }
+
+  function formReset() {
     if (!replaceParent) {
       form.replaceWith(element);
     } else {
       form.replaceWith(parent);
     }
 
-    if (changeInnerTextOfEl) {
-      var newVal = form.querySelector(".small-inline-input").value;
-      changingEl.innerText = newVal;
-    }
-  });
-  form.innerHTML = "\n    <input type=\"text\" placeholder=\"".concat((changeInnerTextOfEl ? changingEl.innerHTML : "&nbsp;").trim(), "\" class=\"small-inline-input\" /> \n    <button type=\"submit\">").concat(btnText, "</button>\n    ");
-
-  if (replaceParent === false || !replaceParent) {
-    element.replaceWith(form);
-  } else {
-    parent.replaceWith(form);
+    form.removeEventListener("submit", handleSubmit);
   }
 }
 
@@ -225,8 +238,66 @@ function getInputValueByForm(form) {
   }, {});
   return values;
 }
+
+function toggleOnOff(actionElement, parentElementSelector) {
+  var action = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "click";
+  actionElement.addEventListener(action, toggleState);
+
+  if (action === "click") {
+    document.body.addEventListener(action, toggleOff);
+  }
+
+  function toggleState(e) {
+    var parentEl = e.target.closest(parentElementSelector);
+    var on = parentEl.dataset.state;
+
+    if (on) {
+      delete parentEl.dataset.state;
+    } else {
+      parentEl.dataset.state = "on";
+    }
+  }
+
+  function toggleOff(e) {
+    if (document.contains(e.target) && !actionElement.closest(parentElementSelector).contains(e.target)) {
+      delete actionElement.closest(parentElementSelector).dataset.state;
+    }
+  }
+}
+
+function getUserId() {
+  return WP.userId;
+}
+
+function clickOutside(element, callback) {
+  document.body.addEventListener("click", runCallBack);
+
+  function runCallBack(e) {
+    if (!element) return;
+
+    if (document.contains(e.target) && !element.contains(e.target) && element !== e.target) {
+      callback();
+    }
+  }
+}
+
+function updateAllLists(newListItem, parenList) {
+  _toConsumableArray(document.querySelectorAll(".add-recipe-to-list")).forEach(function (parentEl) {
+    var clone = newListItem.cloneNode(true);
+    var list = parentEl.querySelector("ul");
+    if (parenList === list) return;
+    list.prepend(clone);
+  });
+}
 },{}],"scripts/account-page.js":[function(require,module,exports) {
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.addCreateListHandler = addCreateListHandler;
+exports.handleShowCreateListForm = handleShowCreateListForm;
+exports.handleAddList = handleAddList;
 
 var _helpers = require("./helpers");
 
@@ -243,18 +314,17 @@ function initManagement() {
 
 function addCreateListHandler(parent) {
   var showFormBtn = parent.querySelector("[data-action='show-create-list']");
-  showFormBtn.addEventListener("click", handleShowCreateListForm);
+  showFormBtn.addEventListener("click", function () {
+    return handleShowCreateListForm(showFormBtn);
+  });
 }
 
-function handleShowCreateListForm(e) {
-  var element = e.currentTarget;
+function handleShowCreateListForm(element) {
   var callback = handleAddList;
-  var formLabel = "List Name";
   var btnText = "create";
   (0, _helpers.replaceWithForm)({
     element: element,
     callback: callback,
-    formLabel: formLabel,
     btnText: btnText,
     replaceParent: false,
     waitTillResolve: true
@@ -268,8 +338,8 @@ function handleAddList(e) {
   var _getInputValueByForm = (0, _helpers.getInputValueByForm)(e.target),
       listName = _getInputValueByForm.index0;
 
-  var userId = getUserId();
-  var listParent = document.querySelector(".my-lists");
+  var userId = (0, _helpers.getUserId)();
+  var listParent = e.target.closest(".lists, .add-recipe-to-list").querySelector("ul");
   var listItemCopy = createNewListItem(listParent, listName);
   listItemCopy.dataset.state = "loading";
   addList(listName, userId).then(function (res) {
@@ -278,22 +348,24 @@ function handleAddList(e) {
     } else {
       var _res$data = res.data,
           list_id = _res$data.list_id,
-          link = _res$data.link,
-          title = _res$data.title;
+          link = _res$data.link;
       var listItem = updateNewListItemWith({
         listItemCopy: listItemCopy,
         list_id: list_id,
-        link: link,
-        title: title
+        link: link
       });
-      listItem.dataset.state = "idle";
+      listItem.dataset.state = "idle"; // this is for the recipe button
+
+      if (listParent.classList.contains("lists")) {
+        (0, _helpers.updateAllLists)(listItem, listParent);
+      }
     }
   });
 }
 
 function createNewListItem(listParent, listName) {
-  var listItemCopy = listParent.querySelector(".list-item").cloneNode(true);
-  listItemCopy.querySelector(".recipe-title a").innerText = listName;
+  var listItemCopy = listParent.querySelector("li").cloneNode(true);
+  listItemCopy.querySelector(".recipe-title .title-el").innerText = listName;
   listParent.prepend(listItemCopy);
   return listItemCopy;
 }
@@ -301,12 +373,10 @@ function createNewListItem(listParent, listName) {
 function updateNewListItemWith(_ref) {
   var listItemCopy = _ref.listItemCopy,
       list_id = _ref.list_id,
-      link = _ref.link,
-      title = _ref.title;
+      link = _ref.link;
   listItemCopy.dataset.listId = list_id;
-  var titleEl = listItemCopy.querySelector(".recipe-title a");
-  titleEl.setAttribute("href", link);
-  titleEl.innerText = title;
+  var titleEl = listItemCopy.querySelector(".recipe-title .title-el");
+  if (titleEl.hasAttribute("href")) titleEl.setAttribute("href", link);
   return listItemCopy;
 }
 
@@ -342,7 +412,7 @@ function handleDeleteList(element) {
   var list = element.closest(".list-item");
   var listId = list.dataset.listId;
   var parentElement = list.parentElement;
-  var userId = getUserId();
+  var userId = (0, _helpers.getUserId)();
   list.dataset.state = "loading";
   deleteList(listId, userId).then(function (res) {
     if (res.error) {
@@ -398,11 +468,6 @@ function handleRenameRecipe(e, parent) {
 } //HANDLES ADDING ITEMS TO A LIST
 //THIS MAY NEED TO BE ADDED TO A NEW LIST
 // Jul 14, 2020 - Joseph changed this to accommodate his staging area.
-
-
-function getUserId() {
-  return document.querySelector("[data-user-id]").dataset.userId;
-}
 },{"./helpers":"scripts/helpers.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
@@ -509,7 +574,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49843" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59903" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
