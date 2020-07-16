@@ -1,3 +1,33 @@
+[data-tooltip]:hover {
+  position: relative;
+}
+[data-tooltip]:hover:after {
+  content: attr(data-tooltip);
+  position: absolute;
+  display: block;
+  padding: 5px;
+  background: var(--tool-tip, var(--darkbg, #12283a));
+  color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+  font-size: 12px;
+  min-width: 125px;
+  max-width: 250px;
+  text-align: center;
+  border-radius: 4px;
+  top: var(--tool-tip-distance, -30px);
+  left: var(--tool-tip-y-distance, auto);
+  opacity: 0;
+  animation: fade-in 0.13s ease-in 0.55s forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 .recipe-title {
   display: flex;
   font-size: 20px;

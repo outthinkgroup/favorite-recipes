@@ -88,7 +88,7 @@ function show_create_list_area(){
 function show_list_title_and_count($list, $options=['edit'=>true, 'recipe_link'=>true]){
   $titleEl = $options['recipe_link'] ? 'a' : 'span'
   ?>
-    <div class="recipe-title" style="--button-color:#efefef">
+    <div class="recipe-title"  style="--button-color:#efefef">
       <span class="count">
         <?php 
         if($list){
@@ -102,7 +102,7 @@ function show_list_title_and_count($list, $options=['edit'=>true, 'recipe_link'=
       
          
           <?php if($options['recipe_link']):?> 
-          <a class="title-el" href="<?php if($list) echo get_the_permalink($list->ID); ?>" >
+          <a class="title-el" data-tooltip="View this list." href="<?php if($list) echo get_the_permalink($list->ID); ?>" >
           <?php else: ?> 
           <span class="title-el">
           <?php endif; ?>  
@@ -122,7 +122,7 @@ function show_list_title_and_count($list, $options=['edit'=>true, 'recipe_link'=
           <?php endif; ?>
         
         <?php if($options['edit']):?>
-          <button class="minimal icon-button" data-action="rename-list"><span class="icon"><?php get_icon('edit'); ?></span></button>
+          <button class="minimal icon-button" data-tooltip="Rename your list." data-action="rename-list"><span class="icon"><?php get_icon('edit'); ?></span></button>
         <?php endif; ?>
       </span>
     </div>
@@ -134,7 +134,8 @@ function show_list_actions($list){
   ?>
   <div class="list-actions">
     <a class="primary button view-list" href="<?php if($list) echo get_the_permalink($list_id); ?>">View List</a>
-    <button type="button" data-action="delete-list" class="danger icon-button"><span class="icon"><?php get_icon('delete'); ?></span></button>
+    <button type="button" data-action="delete-list" data-tooltip="Delete this list" class="danger icon-button" style="--tool-tip-y-distance:-80px" >
+      <span class="icon"><?php get_icon('delete'); ?></span></button>
   </div>
   <?php
 }
