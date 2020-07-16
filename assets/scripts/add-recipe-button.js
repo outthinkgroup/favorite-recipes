@@ -4,7 +4,7 @@ import {
   updateAllListsWithNewCount,
   handleError,
 } from "./helpers";
-import { handleShowCreateListForm } from "./account-page";
+import { handleShowCreateListForm } from "./add-list";
 window.addEventListener("DOMContentLoaded", addRecipeToListButtonInit);
 function addRecipeToListButtonInit() {
   const mainComponents = [...document.querySelectorAll(".add-recipe-to-list")];

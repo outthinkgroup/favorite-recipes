@@ -316,7 +316,7 @@ function handleError(err, item) {
 
   item.dataset.state = "error";
 }
-},{}],"scripts/account-page.js":[function(require,module,exports) {
+},{}],"scripts/add-list.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -327,17 +327,6 @@ exports.handleShowCreateListForm = handleShowCreateListForm;
 exports.handleAddList = handleAddList;
 
 var _helpers = require("./helpers");
-
-window.addEventListener("DOMContentLoaded", initManagement);
-
-function initManagement() {
-  if (!document.querySelector(".recipe-list-management-area")) return;
-  var list = document.querySelector(".my-lists");
-  addListItemActionHandlers(list);
-  var listBottom = document.querySelector(".lists-action");
-  addCreateListHandler(listBottom);
-} //HANDLERS AND API CALLS
-
 
 function addCreateListHandler(parent) {
   var showFormBtn = parent.querySelector("[data-action='show-create-list']");
@@ -371,7 +360,7 @@ function handleAddList(e) {
   listItemCopy.dataset.state = "loading";
   addList(listName, userId).then(function (res) {
     if (res.error) {
-      handleError(res.error, listItemCopy);
+      (0, _helpers.handleError)(res.error, listItemCopy);
     } else {
       var _res$data = res.data,
           list_id = _res$data.list_id,
@@ -414,89 +403,12 @@ function addList(listName, userId) {
   };
   return (0, _helpers.useApi)("create-list", data);
 }
-
-function addListItemActionHandlers(list) {
-  list.addEventListener("click", executeListItemAction);
-
-  function executeListItemAction(e) {
-    var item = e.target;
-    var action = item.dataset.action;
-    if (!action) return;
-
-    switch (action) {
-      case "delete-list":
-        handleDeleteList(item);
-        break;
-
-      case "rename-list":
-        handleRenameListBtnClick(item);
-    }
-  }
-} //DELETE LIST
-
-
-function handleDeleteList(element) {
-  var list = element.closest(".list-item");
-  var listId = list.dataset.listId;
-  var parentElement = list.parentElement;
-  var userId = (0, _helpers.getUserId)();
-  list.dataset.state = "loading";
-  deleteList(listId, userId).then(function (res) {
-    if (res.error) {
-      handleError(res.error, list);
-    } else {
-      parentElement.removeChild(list);
-    }
-  });
-}
-
-function deleteList(listId, userId) {
-  var data = {
-    list_id: parseInt(listId),
-    user_id: parseInt(userId)
-  };
-  return (0, _helpers.useApi)("delete-list", data);
-} //RENAME LIST
-
-
-function handleRenameListBtnClick(element) {
-  (0, _helpers.replaceWithForm)({
-    element: element,
-    callback: handleRenameRecipe,
-    btnText: "rename",
-    replaceParent: true,
-    changeInnerTextOfEl: ".recipe-title a"
-  });
-}
-
-function handleRenameRecipe(e, parent) {
-  e.preventDefault();
-
-  var _getInputValueByForm2 = (0, _helpers.getInputValueByForm)(e.target),
-      title = _getInputValueByForm2.index0;
-
-  var list = e.target.closest(".list-item");
-  var list_id = list.dataset.listId;
-  list.dataset.state = "loading";
-  (0, _helpers.useApi)("rename-list", {
-    title: title,
-    list_id: list_id
-  }).then(function (res) {
-    if (res.error) {
-      handleError(res.error, list);
-    } else {
-      list.dataset.state = "idle";
-    }
-  });
-} //HANDLES ADDING ITEMS TO A LIST
-//THIS MAY NEED TO BE ADDED TO A NEW LIST
-// Jul 14, 2020 - Joseph changed this to accommodate his staging area.
 },{"./helpers":"scripts/helpers.js"}],"scripts/add-recipe-button.js":[function(require,module,exports) {
 "use strict";
 
 var _helpers = require("./helpers");
 
-var _accountPage = require("./account-page");
+var _addList = require("./add-list");
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -538,7 +450,7 @@ function perMainComponentDo(component) {
         break;
 
       case "show-create-list":
-        (0, _accountPage.handleShowCreateListForm)(button);
+        (0, _addList.handleShowCreateListForm)(button);
 
       default:
         console.log("no action was given");
@@ -578,7 +490,7 @@ function addRecipeToList(_ref) {
     list_id: listId
   });
 }
-},{"./helpers":"scripts/helpers.js","./account-page":"scripts/account-page.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+},{"./helpers":"scripts/helpers.js","./add-list":"scripts/add-list.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
 function getBundleURLCached() {

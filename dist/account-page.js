@@ -316,7 +316,7 @@ function handleError(err, item) {
 
   item.dataset.state = "error";
 }
-},{}],"scripts/account-page.js":[function(require,module,exports) {
+},{}],"scripts/add-list.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -327,17 +327,6 @@ exports.handleShowCreateListForm = handleShowCreateListForm;
 exports.handleAddList = handleAddList;
 
 var _helpers = require("./helpers");
-
-window.addEventListener("DOMContentLoaded", initManagement);
-
-function initManagement() {
-  if (!document.querySelector(".recipe-list-management-area")) return;
-  var list = document.querySelector(".my-lists");
-  addListItemActionHandlers(list);
-  var listBottom = document.querySelector(".lists-action");
-  addCreateListHandler(listBottom);
-} //HANDLERS AND API CALLS
-
 
 function addCreateListHandler(parent) {
   var showFormBtn = parent.querySelector("[data-action='show-create-list']");
@@ -371,7 +360,7 @@ function handleAddList(e) {
   listItemCopy.dataset.state = "loading";
   addList(listName, userId).then(function (res) {
     if (res.error) {
-      handleError(res.error, listItemCopy);
+      (0, _helpers.handleError)(res.error, listItemCopy);
     } else {
       var _res$data = res.data,
           list_id = _res$data.list_id,
@@ -414,22 +403,44 @@ function addList(listName, userId) {
   };
   return (0, _helpers.useApi)("create-list", data);
 }
+},{"./helpers":"scripts/helpers.js"}],"scripts/account-page.js":[function(require,module,exports) {
+"use strict";
 
-function addListItemActionHandlers(list) {
-  list.addEventListener("click", executeListItemAction);
+var _helpers = require("./helpers");
+
+var _addList = require("./add-list");
+
+window.addEventListener("DOMContentLoaded", initManagement);
+
+function initManagement() {
+  if (!document.querySelector(".recipe-list-management-area")) return;
+  var list = document.querySelector(".my-lists");
+  addListItemActionHandlers(list);
+  var listBottom = document.querySelector(".lists-action");
+  (0, _addList.addCreateListHandler)(listBottom);
+} //HANDLERS AND API CALLS
+
+
+function addListItemActionHandlers(lists) {
+  lists.addEventListener("click", function (e) {
+    console.log("ran");
+    executeListItemAction(e);
+  });
 
   function executeListItemAction(e) {
     var item = e.target;
     var action = item.dataset.action;
     if (!action) return;
+    console.log(action, item);
 
     switch (action) {
       case "delete-list":
         handleDeleteList(item);
-        break;
+        return;
 
       case "rename-list":
         handleRenameListBtnClick(item);
+        return;
     }
   }
 } //DELETE LIST
@@ -438,14 +449,16 @@ function addListItemActionHandlers(list) {
 function handleDeleteList(element) {
   var list = element.closest(".list-item");
   var listId = list.dataset.listId;
-  var parentElement = list.parentElement;
   var userId = (0, _helpers.getUserId)();
-  list.dataset.state = "loading";
+  var parentElement = list.parentElement;
+  list.dataset.state = "hidden";
   deleteList(listId, userId).then(function (res) {
     if (res.error) {
       handleError(res.error, list);
     } else {
-      parentElement.removeChild(list);
+      if (parentElement.contains(list)) {
+        parentElement.removeChild(list);
+      }
     }
   });
 }
@@ -472,8 +485,8 @@ function handleRenameListBtnClick(element) {
 function handleRenameRecipe(e, parent) {
   e.preventDefault();
 
-  var _getInputValueByForm2 = (0, _helpers.getInputValueByForm)(e.target),
-      title = _getInputValueByForm2.index0;
+  var _getInputValueByForm = (0, _helpers.getInputValueByForm)(e.target),
+      title = _getInputValueByForm.index0;
 
   var list = e.target.closest(".list-item");
   var list_id = list.dataset.listId;
@@ -491,7 +504,7 @@ function handleRenameRecipe(e, parent) {
 } //HANDLES ADDING ITEMS TO A LIST
 //THIS MAY NEED TO BE ADDED TO A NEW LIST
 // Jul 14, 2020 - Joseph changed this to accommodate his staging area.
-},{"./helpers":"scripts/helpers.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+},{"./helpers":"scripts/helpers.js","./add-list":"scripts/add-list.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
 function getBundleURLCached() {
