@@ -129,7 +129,8 @@ exports.getInputValue = getInputValue;
 exports.getInputValueByForm = getInputValueByForm;
 exports.toggleOnOff = toggleOnOff;
 exports.getUserId = getUserId;
-exports.updateAllLists = updateAllLists;
+exports.updateAllListsWithNewList = updateAllListsWithNewList;
+exports.updateAllListsWithNewCount = updateAllListsWithNewCount;
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -281,12 +282,29 @@ function clickOutside(element, callback) {
   }
 }
 
-function updateAllLists(newListItem, parenList) {
-  _toConsumableArray(document.querySelectorAll(".add-recipe-to-list")).forEach(function (parentEl) {
+function updateAllListsWithNewList(newListItem, parentList) {
+  updateAllListsWith(function (list) {
     var clone = newListItem.cloneNode(true);
-    var list = parentEl.querySelector("ul");
-    if (parenList === list) return;
+    if (parentList === list) return;
     list.prepend(clone);
+  });
+}
+
+function updateAllListsWithNewCount(_ref2) {
+  var itemId = _ref2.itemId,
+      newCount = _ref2.newCount,
+      parentList = _ref2.parentList;
+  updateAllListsWith(function (list) {
+    if (parentList === list) return;
+    var countToUpdate = list.querySelector("[data-list-id=\"".concat(itemId, "\"] .count"));
+    countToUpdate.innerText = newCount;
+  });
+}
+
+function updateAllListsWith(callback) {
+  _toConsumableArray(document.querySelectorAll(".add-recipe-to-list")).forEach(function (parentEl) {
+    var list = parentEl.querySelector("ul");
+    callback(list);
   });
 }
 },{}],"scripts/account-page.js":[function(require,module,exports) {
@@ -357,7 +375,7 @@ function handleAddList(e) {
       listItem.dataset.state = "idle"; // this is for the recipe button
 
       if (listParent.classList.contains("lists")) {
-        (0, _helpers.updateAllLists)(listItem, listParent);
+        (0, _helpers.updateAllListsWithNewList)(listItem, listParent);
       }
     }
   });
@@ -511,11 +529,7 @@ function perMainComponentDo(component) {
 
     switch (action) {
       case "add-recipe":
-        addRecipeToList({
-          recipeId: component.dataset.recipeId,
-          listId: button.parentElement.dataset.listId
-        });
-        plusOneCountFor(button.parentElement.dataset.listId);
+        handleAddRecipeToList(button.parentElement, component);
         break;
 
       case "show-create-list":
@@ -526,24 +540,38 @@ function perMainComponentDo(component) {
         break;
     }
   }
+}
 
-  function addRecipeToList(_ref) {
-    var recipeId = _ref.recipeId,
-        listId = _ref.listId;
-    return (0, _helpers.useApi)("add-item", {
-      item_id: parseInt(recipeId),
-      list_id: listId
-    });
-  }
+function handleAddRecipeToList(listItem, component) {
+  listItem.dataset.state = "loading";
+  var countEl = listItem.querySelector(".count");
+  var newCount = parseInt(countEl.innerText) + 1;
+  countEl.innerText = newCount;
+  var data = {
+    recipeId: component.dataset.recipeId,
+    listId: listItem.dataset.listId
+  };
+  addRecipeToList(data).then(function (res) {
+    if (res.error) {
+      listItem.dataset.state = "error";
+    } else {
+      listItem.dataset.state = "idle";
+      (0, _helpers.updateAllListsWithNewCount)({
+        itemId: data.listId,
+        newCount: newCount,
+        parentElement: listItem.parentElement
+      });
+    }
+  });
+}
 
-  function plusOneCountFor(listId) {
-    var allListWithID = document.querySelectorAll("[data-list-id=\"".concat(listId, "\"]"));
-    allListWithID.forEach(function (list) {
-      var countEl = list.querySelector(".recipe-title .count");
-      var updatedCount = parseInt(countEl.innerText) + 1;
-      countEl.innerText = updatedCount;
-    });
-  }
+function addRecipeToList(_ref) {
+  var recipeId = _ref.recipeId,
+      listId = _ref.listId;
+  return (0, _helpers.useApi)("add-item", {
+    item_id: parseInt(recipeId),
+    list_id: listId
+  });
 }
 },{"./helpers":"scripts/helpers.js","./account-page":"scripts/account-page.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;

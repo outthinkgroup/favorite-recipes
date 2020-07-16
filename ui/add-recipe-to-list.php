@@ -7,7 +7,7 @@ function add_recipe_button($iconButton=false){
   <div class="add-recipe-to-list <?php if($iconButton) echo "list-on-side"; ?>" data-recipe-id="<?php echo $post_id; ?>">
     
     <button class="icon-button <?php if($iconButton) echo "no-text"; ?>" data-action="toggle-list">
-      <span class="icon"><?php get_icon('gem') ?></span>
+      <span class="icon"><?php get_icon('star', 'solid'); ?></span>
       <?php 
       if(!$iconButton): ?>
       <span class="button-body">Add Recipe To List</span>
@@ -23,12 +23,18 @@ function add_recipe_button($iconButton=false){
         foreach($lists as $list){
           ?>
           <li data-state="idle" data-list-id="<?php echo $list->ID; ?>">
-            <button data-action="add-recipe" class="button-minimal"><?php show_list_title_and_count($list, ['edit'=> false, 'recipe_link'=>false ]); ?></button>
+            <button data-action="add-recipe" class="button-minimal  icon-button with-text" style="--button-alignment:space-between">
+              <div class="text"><?php show_list_title_and_count($list, ['edit'=> false, 'recipe_link'=>false ]); ?> </div>
+              <span class="icon"><?php get_icon('plus', 'solid'); ?></span>
+            </button>
           </li>
           <?php } ?>
         <?php } ?>
           <li data-state="hidden" data-list-id="" >
-            <button  data-action="add-recipe" class="button-minimal"><?php show_list_title_and_count(null, ['edit'=> false, 'recipe_link'=>false ]); ?></button>
+            <button  data-action="add-recipe" class="button-minimal icon-button with-text" style="--button-alignment:space-between">
+              <div class="text"><?php show_list_title_and_count(null, ['edit'=> false, 'recipe_link'=>false ]); ?> </div>
+              <span class="icon"><?php get_icon('plus', 'solid'); ?></span>
+            </button>
           </li>
         </ul>
       <?php show_create_list_area(); ?>

@@ -129,7 +129,8 @@ exports.getInputValue = getInputValue;
 exports.getInputValueByForm = getInputValueByForm;
 exports.toggleOnOff = toggleOnOff;
 exports.getUserId = getUserId;
-exports.updateAllLists = updateAllLists;
+exports.updateAllListsWithNewList = updateAllListsWithNewList;
+exports.updateAllListsWithNewCount = updateAllListsWithNewCount;
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -281,12 +282,29 @@ function clickOutside(element, callback) {
   }
 }
 
-function updateAllLists(newListItem, parenList) {
-  _toConsumableArray(document.querySelectorAll(".add-recipe-to-list")).forEach(function (parentEl) {
+function updateAllListsWithNewList(newListItem, parentList) {
+  updateAllListsWith(function (list) {
     var clone = newListItem.cloneNode(true);
-    var list = parentEl.querySelector("ul");
-    if (parenList === list) return;
+    if (parentList === list) return;
     list.prepend(clone);
+  });
+}
+
+function updateAllListsWithNewCount(_ref2) {
+  var itemId = _ref2.itemId,
+      newCount = _ref2.newCount,
+      parentList = _ref2.parentList;
+  updateAllListsWith(function (list) {
+    if (parentList === list) return;
+    var countToUpdate = list.querySelector("[data-list-id=\"".concat(itemId, "\"] .count"));
+    countToUpdate.innerText = newCount;
+  });
+}
+
+function updateAllListsWith(callback) {
+  _toConsumableArray(document.querySelectorAll(".add-recipe-to-list")).forEach(function (parentEl) {
+    var list = parentEl.querySelector("ul");
+    callback(list);
   });
 }
 },{}],"scripts/account-page.js":[function(require,module,exports) {
@@ -357,7 +375,7 @@ function handleAddList(e) {
       listItem.dataset.state = "idle"; // this is for the recipe button
 
       if (listParent.classList.contains("lists")) {
-        (0, _helpers.updateAllLists)(listItem, listParent);
+        (0, _helpers.updateAllListsWithNewList)(listItem, listParent);
       }
     }
   });

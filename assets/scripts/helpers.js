@@ -131,11 +131,25 @@ function clickOutside(element, callback) {
   }
 }
 
-export function updateAllLists(newListItem, parenList) {
-  [...document.querySelectorAll(".add-recipe-to-list")].forEach((parentEl) => {
+export function updateAllListsWithNewList(newListItem, parentList) {
+  updateAllListsWith((list) => {
     const clone = newListItem.cloneNode(true);
-    const list = parentEl.querySelector("ul");
-    if (parenList === list) return;
+    if (parentList === list) return;
     list.prepend(clone);
+  });
+}
+export function updateAllListsWithNewCount({ itemId, newCount, parentList }) {
+  updateAllListsWith((list) => {
+    if (parentList === list) return;
+    const countToUpdate = list.querySelector(
+      `[data-list-id="${itemId}"] .count`
+    );
+    countToUpdate.innerText = newCount;
+  });
+}
+function updateAllListsWith(callback) {
+  [...document.querySelectorAll(".add-recipe-to-list")].forEach((parentEl) => {
+    const list = parentEl.querySelector("ul");
+    callback(list);
   });
 }

@@ -3,7 +3,7 @@ import {
   useApi,
   getInputValueByForm,
   getUserId,
-  updateAllLists,
+  updateAllListsWithNewList,
 } from "./helpers";
 
 window.addEventListener("DOMContentLoaded", initManagement);
@@ -60,7 +60,7 @@ export function handleAddList(e) {
       listItem.dataset.state = "idle";
       // this is for the recipe button
       if (listParent.classList.contains("lists")) {
-        updateAllLists(listItem, listParent);
+        updateAllListsWithNewList(listItem, listParent);
       }
     }
   });

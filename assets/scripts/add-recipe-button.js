@@ -1,4 +1,4 @@
-import { useApi, toggleOnOff } from "./helpers";
+import { useApi, toggleOnOff, updateAllListsWithNewCount } from "./helpers";
 import { addCreateListHandler, handleShowCreateListForm } from "./account-page";
 window.addEventListener("DOMContentLoaded", addRecipeToListButtonInit);
 function addRecipeToListButtonInit() {
@@ -21,11 +21,7 @@ function perMainComponentDo(component) {
 
     switch (action) {
       case "add-recipe":
-        addRecipeToList({
-          recipeId: component.dataset.recipeId,
-          listId: button.parentElement.dataset.listId,
-        });
-        plusOneCountFor(button.parentElement.dataset.listId);
+        handleAddRecipeToList(button.parentElement, component);
         break;
       case "show-create-list":
         handleShowCreateListForm(button);
@@ -34,19 +30,29 @@ function perMainComponentDo(component) {
         break;
     }
   }
-
-  function addRecipeToList({ recipeId, listId }) {
-    return useApi("add-item", { item_id: parseInt(recipeId), list_id: listId });
-  }
-
-  function plusOneCountFor(listId) {
-    const allListWithID = document.querySelectorAll(
-      `[data-list-id="${listId}"]`
-    );
-    allListWithID.forEach((list) => {
-      const countEl = list.querySelector(".recipe-title .count");
-      const updatedCount = parseInt(countEl.innerText) + 1;
-      countEl.innerText = updatedCount;
-    });
-  }
+}
+function handleAddRecipeToList(listItem, component) {
+  listItem.dataset.state = "loading";
+  const countEl = listItem.querySelector(".count");
+  const newCount = parseInt(countEl.innerText) + 1;
+  countEl.innerText = newCount;
+  const data = {
+    recipeId: component.dataset.recipeId,
+    listId: listItem.dataset.listId,
+  };
+  addRecipeToList(data).then((res) => {
+    if (res.error) {
+      listItem.dataset.state = "error";
+    } else {
+      listItem.dataset.state = "idle";
+      updateAllListsWithNewCount({
+        itemId: data.listId,
+        newCount,
+        parentElement: listItem.parentElement,
+      });
+    }
+  });
+}
+function addRecipeToList({ recipeId, listId }) {
+  return useApi("add-item", { item_id: parseInt(recipeId), list_id: listId });
 }
