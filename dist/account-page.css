@@ -30,6 +30,13 @@
   pointer-events: none;
   opacity: 0;
 }
+@media (max-width: 762px) {
+  .list-item button {
+    opacity: 1;
+    pointer-events: all;
+    border: 1px solid currentColor;
+  }
+}
 .list-item button.icon-button {
   font-size: 18px;
 }
