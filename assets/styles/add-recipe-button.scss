@@ -1,0 +1,103 @@
+@import "states.scss";
+
+.add-recipe-to-list {
+  position: relative;
+  max-width: 220px;
+  > button {
+    width: 100%;
+    border-radius: 3px;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    > * {
+      font-weight: bold;
+      padding: 12px 15px;
+    }
+    &.no-text {
+      width: auto;
+    }
+    .button-body {
+      width: 100%;
+      text-align: center;
+      padding-left: 0;
+    }
+  }
+  .button-lists {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    width: 100%;
+    background: white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    display: none;
+    z-index: 99;
+    border-radius: 3px;
+  }
+  .lists {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+    overflow: hidden;
+    overflow-y: scroll;
+    max-height: 220px;
+    li {
+      @extend %states;
+    }
+    button {
+      padding: 5px;
+      background: transparent;
+      width: 100%;
+      border-radius: 0;
+      border-bottom: 1px solid #f0f0f0;
+      text-transform: none;
+      text-align: left;
+      svg {
+        fill: #888;
+      }
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+      * {
+        font-size: 14px;
+        color: black;
+        .count {
+          color: white;
+        }
+      }
+    }
+  }
+  &.list-on-side {
+    text-align: left;
+    width: auto;
+    display: inline-block;
+    .button-lists {
+      top: 0;
+      left: 100%;
+      width: 250px;
+    }
+  }
+
+  &[data-state="on"] {
+    .button-lists {
+      display: unset;
+    }
+  }
+  .lists-action {
+    > button {
+      font-size: 12px;
+      padding: 8px;
+      --button-alignment: flex-start;
+      --icon-spacing: 0px;
+      --text-width: 100%;
+    }
+    .small-inline-input {
+      padding: 5px;
+      font-size: 16px;
+      + button {
+        padding: 5px 10px;
+      }
+    }
+  }
+}

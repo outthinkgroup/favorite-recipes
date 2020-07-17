@@ -1,0 +1,243 @@
+[data-tooltip]:hover {
+  position: relative;
+}
+[data-tooltip]:hover:after {
+  content: attr(data-tooltip);
+  position: absolute;
+  display: block;
+  padding: 5px;
+  background: var(--tool-tip, var(--darkbg, #12283a));
+  color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+  font-size: 12px;
+  min-width: 125px;
+  max-width: 250px;
+  text-align: center;
+  border-radius: 4px;
+  top: var(--tool-tip-distance, -30px);
+  left: var(--tool-tip-y-distance, auto);
+  opacity: 0;
+  animation: fade-in 0.13s ease-in 0.55s forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.recipe-title {
+  display: flex;
+  font-size: 20px;
+  font-weight: 600;
+  align-items: center;
+}
+.recipe-title a {
+  color: black;
+}
+.recipe-title a:hover {
+  color: #0fa3b1;
+}
+.recipe-title .count {
+  font-size: 16px;
+  display: inline-flex;
+  width: 2em;
+  min-width: 2em;
+  height: 2em;
+  line-height: 0;
+  align-items: center;
+  justify-content: center;
+  background: #2cadba;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+button * {
+  pointer-events: none;
+}
+
+.icon svg {
+  width: 0.78em;
+  padding: 0;
+  fill: currentColor;
+}
+
+.icon-button .icon {
+  font-size: 18px;
+  pointer-events: none;
+}
+.icon-button.with-text {
+  display: flex;
+  align-items: center;
+  justify-content: var(--button-alignment, center);
+}
+.icon-button.with-text > .icon {
+  display: inline-block;
+  padding: 0 var(--spacing-right, 5px) 0 var(--spacing-left, 5px);
+}
+.icon-button.with-text.icon-left {
+  --spacing-right: var(--icon-spacing, 5px);
+  --spacing-left: 0;
+}
+.icon-button.with-text.icon-right {
+  --spacing-left: var(--icon-spacing, 5px);
+  --spacing-right: 0;
+}
+.icon-button.with-text .text {
+  width: var(--text-width, auto);
+}
+
+form.generated-inline {
+  display: inline-flex;
+  width: 100%;
+}
+form.generated-inline input {
+  width: 100%;
+}
+form.generated-inline button {
+  opacity: 1;
+  pointer-events: all;
+  background: var(--button-color, #efefef);
+  width: auto;
+  border-radius: 0px;
+  color: var(--button-text-color, #888);
+}
+form.generated-inline button * {
+  pointer-events: none;
+}
+form.generated-inline button:hover {
+  background: var(--button-color--hover, #e0e0e0);
+}
+
+.lists-action {
+  background: white;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+.lists-action > button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: #888;
+  font-weight: 400;
+  font-size: 14px;
+  border-radius: 0px;
+  border: none;
+}
+.lists-action > button:hover {
+  background: #efefef;
+}
+
+.add-recipe-to-list .lists li[data-state=loading] {
+  opacity: 0.75;
+}
+.add-recipe-to-list .lists li[data-state=error] {
+  background: var(--danger-light, var(--danger, #df9393));
+}
+.add-recipe-to-list .lists li[data-state=hidden] {
+  display: none;
+}
+
+.add-recipe-to-list {
+  position: relative;
+  max-width: 220px;
+}
+.add-recipe-to-list > button {
+  width: 100%;
+  border-radius: 3px;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.add-recipe-to-list > button > * {
+  font-weight: bold;
+  padding: 12px 15px;
+}
+.add-recipe-to-list > button.no-text {
+  width: auto;
+}
+.add-recipe-to-list > button .button-body {
+  width: 100%;
+  text-align: center;
+  padding-left: 0;
+}
+.add-recipe-to-list .button-lists {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  width: 100%;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  display: none;
+  z-index: 99;
+  border-radius: 3px;
+}
+.add-recipe-to-list .lists {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  overflow: hidden;
+  overflow-y: scroll;
+  max-height: 220px;
+}
+.add-recipe-to-list .lists button {
+  padding: 5px;
+  background: transparent;
+  width: 100%;
+  border-radius: 0;
+  border-bottom: 1px solid #f0f0f0;
+  text-transform: none;
+  text-align: left;
+}
+.add-recipe-to-list .lists button svg {
+  fill: #888;
+}
+.add-recipe-to-list .lists button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+.add-recipe-to-list .lists button * {
+  font-size: 14px;
+  color: black;
+}
+.add-recipe-to-list .lists button * .count {
+  color: white;
+}
+.add-recipe-to-list.list-on-side {
+  text-align: left;
+  width: auto;
+  display: inline-block;
+}
+.add-recipe-to-list.list-on-side .button-lists {
+  top: 0;
+  left: 100%;
+  width: 250px;
+}
+.add-recipe-to-list[data-state=on] .button-lists {
+  display: unset;
+}
+.add-recipe-to-list .lists-action > button {
+  font-size: 12px;
+  padding: 8px;
+  --button-alignment: flex-start;
+  --icon-spacing: 0px;
+  --text-width: 100%;
+}
+.add-recipe-to-list .lists-action .small-inline-input {
+  padding: 5px;
+  font-size: 16px;
+}
+.add-recipe-to-list .lists-action .small-inline-input + button {
+  padding: 5px 10px;
+}
+
+/*# sourceMappingURL=/global.css.map */
