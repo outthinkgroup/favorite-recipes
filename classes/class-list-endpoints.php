@@ -100,8 +100,15 @@ class List_Endpoints {
     // Update the post into the database
     $result = wp_update_post( $renamed_list );
     // need error reporting.
+    $new_title = get_the_title($result);
+    $data = array(
+      'data' => array(
+        'success' => true,
+        'title' => $new_title,
+        'list_id' => $result
+      ));
 
-    $response = new WP_REST_Response(['data'=> 'TEMPORARY']);
+    $response = new WP_REST_Response($data);
     $response->set_status(200);
     return $response;
   }
@@ -114,9 +121,21 @@ class List_Endpoints {
 
     // Update the post into the database
     $result = wp_update_post( $deleted_list );
-    $response = new WP_REST_Response(['data'=> 'TEMPORARY']);
-    $response->set_status(200);
-    return $response;
+    if ( ! is_wp_error($result) ) {
+      $data = array(
+        'data' => array(
+          'success' => true,
+          'id' => $result
+        )
+      );
+      $response = new WP_REST_Response($data);
+      $response->set_status(200);
+      return $response;
+    } else {
+      $response = new WP_REST_Response(['data'=> 'we had an unknown error']);
+      $response->set_status(500);
+    }
+    
   }
   static function remove_item(){
     $data = List_Endpoints::get_json();
@@ -153,10 +172,9 @@ class List_Endpoints {
     if (empty($list_items)) {
       $list_items = array();
     }
-    $list_items[] = $item_id;
-    
-  //$list_items = '';
-    if (update_post_meta( $list_id, 'list_items', $list_items)) {
+    if (!in_array($item_id, $list_items)) {
+      $list_items[] = $item_id;
+      update_post_meta( $list_id, 'list_items', $list_items);
       $responsearr = array(
         'data' => array(
           'list_id' => $list_id,
@@ -169,7 +187,8 @@ class List_Endpoints {
       return $response;
     } else {
       $responsearr = array(
-        'error' => 'The response was '. false . '. Your list items were not saved.'
+        'error' => false,
+        'message' => 'The response was '. false . '. Your list items were not saved.'
       );
       $response = new WP_REST_Response($responsearr);
       $response->set_status(500);
