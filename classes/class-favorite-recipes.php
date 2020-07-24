@@ -19,7 +19,7 @@ if(!class_exists( 'Favorite_Recipes' )) {
       wp_localize_script( 'fr-global-scripts', 'WP', [
         'userId' => get_current_user_id(),
        ] );
-      if(!is_account_page()) return;
+      //if(!is_account_page()) return; - Jul 23, 2020 -> commented this out
       wp_enqueue_script('fr-account-page-script', FAVORITE_RECIPES_URL . 'dist/account-page.js', array(), true);
       wp_enqueue_style('fr-account-page-styles', FAVORITE_RECIPES_URL . 'dist/account-page.css', '1.00' , 'all');
 

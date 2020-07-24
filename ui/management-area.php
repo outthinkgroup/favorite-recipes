@@ -6,7 +6,7 @@ function add_favorites_menu_item( $current_menu_items ) {
   return $current_menu_items;
 
 }
-add_filter( 'woocommerce_account_menu_items', 'add_favorites_menu_item', 10, 1 );
+//add_filter( 'woocommerce_account_menu_items', 'add_favorites_menu_item', 10, 1 );
     
 
 /**
@@ -18,8 +18,13 @@ function add_favorite_endpoint_to_members_area() {
 add_action( 'init', 'add_favorite_endpoint_to_members_area' );
 
 
-add_action( 'woocommerce_account_my-favorites_endpoint', 'my_favorites_endpoint_content');
+//add_action( 'woocommerce_account_my-favorites_endpoint', 'my_favorites_endpoint_content');
+
+add_shortcode( 'myfavorites', 'my_favorites_endpoint_content' );
+
+
 function my_favorites_endpoint_content(){
+  ob_start();
   $user_id = get_current_user_id();
   ?>
   <div class="recipe-list-management-area"
@@ -46,6 +51,7 @@ function my_favorites_endpoint_content(){
     </div>
   </div>
   <?php 
+  return ob_get_clean();
 }
 
 
