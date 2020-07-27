@@ -71,37 +71,3 @@ if(!class_exists( 'Favorite_Recipes' )) {
 }
 
 
-/* 
-public function __construct(){
-    add_action('rest_api_init', array($this, 'init_endpoints'));
-  }
-  public function init_endpoints(){
-    register_rest_route( 'gfoas/v1', '/redirect-settings', array(
-			'methods' => 'GET',
-			'callback' => 'Redirect_Settings_Endpoints::update_list',
-			'args'		=> []	
-    ));
-
-
-    static function update_list(){
-      $json = file_get_contents('php://input');
-      $data = json_decode($json);
-    $res = [];
-    
-    // $items = get_post_meta($list_id, 'items', true);
-    
-    //redirects
-    $redirects = get_option('redirect_post_types');
-    //post types
-    $post_types = Redirect_Settings_Endpoints::get_post_type_list();
-    //posts_in 
-    $posts_in = Redirect_Settings_Endpoints::get_firsts_posts_per($post_types);
-
-    $res['redirects'] = $redirects;
-    $res['post_types'] = $post_types;
-    $res['posts_in'] = $posts_in;
-    $response = new WP_REST_Response($res);
-	  $response->set_status(200); 
-	  return $response;
-  }
-*/
