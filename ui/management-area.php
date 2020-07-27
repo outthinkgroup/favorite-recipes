@@ -30,7 +30,7 @@ function my_favorites_endpoint_content(){
   <div class="recipe-list-management-area"
     data-user-id="<?php echo $user_id; ?>"
   >
-  <h2>My Recipe Lists</h2>
+  <h3> Your Collections </h3>
   <?php 
       $lists = get_user_lists($user_id);
       ?> 
