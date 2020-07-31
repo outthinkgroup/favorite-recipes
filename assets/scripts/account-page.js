@@ -14,8 +14,9 @@ function initManagement() {
   const list = document.querySelector(".my-lists");
   addListItemActionHandlers(list);
 
-  const listBottom = document.querySelector(".lists-action");
-  addCreateListHandler(listBottom);
+  document
+    .querySelectorAll(".lists-action")
+    .forEach((listBottom) => addCreateListHandler(listBottom));
 }
 
 //HANDLERS AND API CALLS
