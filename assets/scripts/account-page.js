@@ -93,9 +93,9 @@ window.__FAVE_RECIPE = {
   deleteRecipeFromList,
 };
 
-function deleteRecipeFromList(recipeId, listId) {
-  return useApi("delete-item", {
+function deleteRecipeFromList({ recipeId, listId }) {
+  return useApi("remove-item", {
     item_id: parseInt(recipeId),
-    list_id: listId,
+    list_id: parseInt(listId),
   });
 }

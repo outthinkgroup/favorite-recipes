@@ -533,10 +533,12 @@ window.__FAVE_RECIPE = _objectSpread(_objectSpread({}, window.__FAVE_RECIPE), {}
   deleteRecipeFromList: deleteRecipeFromList
 });
 
-function deleteRecipeFromList(recipeId, listId) {
-  return (0, _helpers.useApi)("delete-item", {
+function deleteRecipeFromList(_ref) {
+  var recipeId = _ref.recipeId,
+      listId = _ref.listId;
+  return (0, _helpers.useApi)("remove-item", {
     item_id: parseInt(recipeId),
-    list_id: listId
+    list_id: parseInt(listId)
   });
 }
 },{"./helpers":"scripts/helpers.js","./add-list":"scripts/add-list.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {

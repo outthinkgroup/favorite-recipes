@@ -147,6 +147,8 @@ class List_Endpoints {
     if ($contents !== false) {
       unset($list_items[$contents]);
       update_post_meta( $list_id, 'list_items', $list_items);
+      
+      unset($data);
       $data['success'] = true;
       $data['message'] = 'List ID:'. $list_id .' updated to remove item '. $item_id;
       $response = new WP_REST_Response($data);

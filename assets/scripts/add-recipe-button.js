@@ -64,4 +64,4 @@ function addRecipeToList({ recipeId, listId }) {
 }
 
 //adding to global window for theme authors to use
-window.__FAVE_RECIPE.addRecipeToList = addRecipeToList;
+window.__FAVE_RECIPE = { ...window.__FAVE_RECIPE, addRecipeToList };
