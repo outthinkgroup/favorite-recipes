@@ -58,6 +58,10 @@ function handleAddRecipeToList(listItem, component) {
     }
   });
 }
+
 function addRecipeToList({ recipeId, listId }) {
   return useApi("add-item", { item_id: parseInt(recipeId), list_id: listId });
 }
+
+//adding to global window for theme authors to use
+window.__FAVE_RECIPE = { ...window.__FAVE_RECIPE, addRecipeToList };
