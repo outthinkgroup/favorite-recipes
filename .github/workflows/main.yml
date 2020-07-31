@@ -20,7 +20,7 @@ jobs:
         FTP_SERVER: 35.245.151.137
         FTP_USERNAME: ${{ secrets.SERVER_USER }}
         FTP_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
-        REMOTE_DIR: /www/${{secrets.SERVER_USER}}_933/public/wp-content/plugins/favorite-recipes
+        REMOTE_DIR: /www/${{secrets.SERVER_USER}}_933/public/wp-content/plugins/recipe-lists
         ARGS: --delete
         PORT: 36541
         METHOD: sftp
