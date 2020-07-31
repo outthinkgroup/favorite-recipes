@@ -51,7 +51,7 @@ function shortcode_add_recipe_button($atts){
             'post_id' => null,
         ), $atts, 'add_recipe_button' );
   ob_start();
-  add_recipe_button($atts['icon_button'], atts['post_id']);
+  add_recipe_button($atts['icon_button'], $atts['post_id']);
   return ob_get_clean();
 }
 add_shortcode('add_recipe_button', 'shortcode_add_recipe_button' );
