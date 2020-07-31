@@ -88,8 +88,14 @@ function handleRenameRecipe(e, parent) {
     }
   });
 }
+window.__FAVE_RECIPE = {
+  ...window.__FAVE_RECIPE,
+  deleteRecipeFromList,
+};
 
-//HANDLES ADDING ITEMS TO A LIST
-//THIS MAY NEED TO BE ADDED TO A NEW LIST
-
-// Jul 14, 2020 - Joseph changed this to accommodate his staging area.
+function deleteRecipeFromList(recipeId, listId) {
+  return useApi("delete-item", {
+    item_id: parseInt(recipeId),
+    list_id: listId,
+  });
+}
