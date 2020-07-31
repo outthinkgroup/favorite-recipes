@@ -1,7 +1,9 @@
 <?php
-function add_recipe_button($iconButton=false){
-  global $post;
-  $post_id = $post->ID;
+function add_recipe_button($iconButton=false, $post_id=null){
+  if(!$post_id){
+    global $post;
+    $post_id = $post->ID;
+  }
   $userID = get_current_user_id();
   ?>
   <div class="add-recipe-to-list <?php if($iconButton) echo "list-on-side"; ?>" data-recipe-id="<?php echo $post_id; ?>">
@@ -46,9 +48,10 @@ function shortcode_add_recipe_button($atts){
   $atts = shortcode_atts(
         array(
             'icon_button' => false,
+            'post_id' => null,
         ), $atts, 'add_recipe_button' );
   ob_start();
-  add_recipe_button($atts['icon_button']);
+  add_recipe_button($atts['icon_button'], atts['post_id']);
   return ob_get_clean();
 }
 add_shortcode('add_recipe_button', 'shortcode_add_recipe_button' );

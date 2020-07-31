@@ -172,6 +172,7 @@ class List_Endpoints {
     if (empty($list_items)) {
       $list_items = array();
     }
+    var_dump(['items'=>$list_items, 'list_id'=>$list_id, 'item_id'=>$item_id]);
     if (!in_array($item_id, $list_items)) {
       $list_items[] = $item_id;
       update_post_meta( $list_id, 'list_items', $list_items);
