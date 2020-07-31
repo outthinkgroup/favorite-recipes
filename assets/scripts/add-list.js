@@ -8,6 +8,7 @@ import {
 } from "./helpers";
 
 export function addCreateListHandler(parent) {
+  console.log("addCreateListHandler Ran", parent);
   const showFormBtn = parent.querySelector(`[data-action='show-create-list']`);
   showFormBtn.addEventListener("click", () =>
     handleShowCreateListForm(showFormBtn)
@@ -55,15 +56,22 @@ export function handleAddList(e) {
 }
 
 function createNewListItem(listParent, listName) {
-  const listItemCopy = listParent.querySelector("li").cloneNode(true);
+  const listItemCopy = listParent
+    .querySelector("li:last-child")
+    .cloneNode(true);
   listItemCopy.querySelector(".recipe-title .title-el").innerText = listName;
   listParent.prepend(listItemCopy);
   return listItemCopy;
 }
 function updateNewListItemWith({ listItemCopy, list_id, link }) {
   listItemCopy.dataset.listId = list_id;
-  const titleEl = listItemCopy.querySelector(".recipe-title .title-el");
-  if (titleEl.hasAttribute("href")) titleEl.setAttribute("href", link);
+  const allLinks = [...listItemCopy.querySelectorAll("a")];
+  console.log(allLinks);
+  allLinks.forEach((anchorEl) => {
+    anchorEl.setAttribute("href", link);
+    console.log(link.href);
+  });
+
   return listItemCopy;
 }
 

@@ -328,7 +328,20 @@ exports.handleAddList = handleAddList;
 
 var _helpers = require("./helpers");
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function addCreateListHandler(parent) {
+  console.log("addCreateListHandler Ran", parent);
   var showFormBtn = parent.querySelector("[data-action='show-create-list']");
   showFormBtn.addEventListener("click", function () {
     return handleShowCreateListForm(showFormBtn);
@@ -380,7 +393,7 @@ function handleAddList(e) {
 }
 
 function createNewListItem(listParent, listName) {
-  var listItemCopy = listParent.querySelector("li").cloneNode(true);
+  var listItemCopy = listParent.querySelector("li:last-child").cloneNode(true);
   listItemCopy.querySelector(".recipe-title .title-el").innerText = listName;
   listParent.prepend(listItemCopy);
   return listItemCopy;
@@ -391,8 +404,14 @@ function updateNewListItemWith(_ref) {
       list_id = _ref.list_id,
       link = _ref.link;
   listItemCopy.dataset.listId = list_id;
-  var titleEl = listItemCopy.querySelector(".recipe-title .title-el");
-  if (titleEl.hasAttribute("href")) titleEl.setAttribute("href", link);
+
+  var allLinks = _toConsumableArray(listItemCopy.querySelectorAll("a"));
+
+  console.log(allLinks);
+  allLinks.forEach(function (anchorEl) {
+    anchorEl.setAttribute("href", link);
+    console.log(link.href);
+  });
   return listItemCopy;
 }
 
@@ -416,8 +435,9 @@ function initManagement() {
   if (!document.querySelector(".recipe-list-management-area")) return;
   var list = document.querySelector(".my-lists");
   addListItemActionHandlers(list);
-  var listBottom = document.querySelector(".lists-action");
-  (0, _addList.addCreateListHandler)(listBottom);
+  document.querySelectorAll(".lists-action").forEach(function (listBottom) {
+    return (0, _addList.addCreateListHandler)(listBottom);
+  });
 } //HANDLERS AND API CALLS
 
 
@@ -610,7 +630,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60540" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63901" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
