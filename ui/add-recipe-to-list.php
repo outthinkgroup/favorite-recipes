@@ -9,7 +9,7 @@ function add_recipe_button($iconButton=false, $post_id=null){
   <div class="add-recipe-to-list <?php if($iconButton) echo "list-on-side"; ?>" data-recipe-id="<?php echo $post_id; ?>">
     
     <button class="icon-button <?php if($iconButton) echo "no-text"; ?>" data-action="toggle-list">
-      <span class="icon"><?php get_icon('star', 'solid'); ?></span>
+      <span class="icon" ><?php get_icon('plus-circle', 'solid'); ?></span>
       <?php 
       if(!$iconButton): ?>
       <span class="button-body">Add To Collections</span>
