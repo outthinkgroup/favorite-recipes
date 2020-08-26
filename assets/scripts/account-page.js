@@ -91,6 +91,7 @@ function handleRenameRecipe(e, parent) {
 window.__FAVE_RECIPE = {
   ...window.__FAVE_RECIPE,
   deleteRecipeFromList,
+  deleteList,
 };
 
 function deleteRecipeFromList({ recipeId, listId }) {

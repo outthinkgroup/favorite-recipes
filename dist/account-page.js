@@ -530,7 +530,8 @@ function handleRenameRecipe(e, parent) {
 }
 
 window.__FAVE_RECIPE = _objectSpread(_objectSpread({}, window.__FAVE_RECIPE), {}, {
-  deleteRecipeFromList: deleteRecipeFromList
+  deleteRecipeFromList: deleteRecipeFromList,
+  deleteList: deleteList
 });
 
 function deleteRecipeFromList(_ref) {
