@@ -12,7 +12,7 @@ function add_recipe_button($iconButton=false, $post_id=null){
       <span class="icon"><?php get_icon('star', 'solid'); ?></span>
       <?php 
       if(!$iconButton): ?>
-      <span class="button-body">Add To Favorites</span>
+      <span class="button-body">Add To Collections</span>
       <?php endif; ?>  
     </button>
     <?php
