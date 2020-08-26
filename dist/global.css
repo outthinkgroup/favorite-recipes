@@ -91,6 +91,11 @@ button * {
   width: var(--text-width, auto);
 }
 
+.add-recipe-to-list > .icon-button > .icon {
+  line-height: 0;
+  font-size: 30px;
+}
+
 form.generated-inline {
   display: inline-flex;
   width: 100%;
