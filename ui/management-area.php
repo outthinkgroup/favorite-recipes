@@ -68,7 +68,7 @@ function show_list_item( $list=null ){
 function show_create_list_area(){
   ?> 
   <div class="lists-action">
-    <button data-action="show-create-list" class="icon-button with-text icon-left"> <span class="icon"><?php get_icon('plus', 'solid');?></span> <span class="text">Create New List</span></button>
+    <button data-action="show-create-list" class="icon-button with-text icon-left"> <span class="icon"><?php get_icon('plus', 'solid');?></span> <span class="text">Create New Collection</span></button>
   </div>
   <?php  
 }
