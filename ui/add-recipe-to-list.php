@@ -24,7 +24,11 @@ function add_recipe_button($iconButton=false, $post_id=null){
       if (!empty($lists)) { 
         foreach($lists as $list){
           ?>
-          <li data-state="idle" data-list-id="<?php echo $list->ID; ?>">
+          <li 
+            data-state="idle" 
+            data-list-id="<?php echo $list->ID; ?>" 
+            <?php if(is_recipe_in_list($post_id, $list->ID)) echo "data-in-list='true'";?>
+          >
             <button data-action="add-recipe" class="button-minimal  icon-button with-text" style="--button-alignment:space-between">
               <div class="text"><?php show_list_title_and_count($list, ['edit'=> false, 'recipe_link'=>false ]); ?> </div>
               <span class="icon"><?php get_icon('plus', 'solid'); ?></span>
@@ -55,3 +59,14 @@ function shortcode_add_recipe_button($atts){
   return ob_get_clean();
 }
 add_shortcode('add_recipe_button', 'shortcode_add_recipe_button' );
+
+
+function is_recipe_in_list($post_id, $list_id){
+  $recipes = get_list_items($list_id);
+
+  if(is_array($recipes) && in_array($post_id, $recipes)){
+    return true;
+  }else{
+    return false;
+  }
+}
