@@ -52,6 +52,7 @@ function get_user_lists($user_id){
   $lists = get_posts($listArgs);
   return $lists;
 }
+
 function show_list_item( $list=null ){
   $list_state = $list ? 'idle' : 'hidden';
   ?>
