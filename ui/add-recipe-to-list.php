@@ -29,7 +29,7 @@ function add_recipe_button($iconButton=false, $post_id=null){
             data-list-id="<?php echo $list->ID; ?>" 
             <?php if(is_recipe_in_list($post_id, $list->ID)) echo "data-in-list='true'";?>
           >
-            <button data-action="add-recipe" class="button-minimal  icon-button with-text" style="--button-alignment:space-between">
+            <button data-action="add-recipe" class="button-minimal  icon-button with-text" style="--button-alignment:space-between" <?php if(is_recipe_in_list($post_id, $list->ID)) echo "disabled=true";?>>
               <div class="text"><?php show_list_title_and_count($list, ['edit'=> false, 'recipe_link'=>false ]); ?> </div>
               <span class="icon"><?php get_icon('plus', 'solid'); ?></span>
             </button>
