@@ -36,6 +36,15 @@ button * {
     fill: currentColor;
   }
 }
+[data-action="toggle-list"] .icon svg {
+  width: 0.78em;
+  padding: 0;
+  position: absolute;
+  fill: currentColor;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 .icon-button {
   .icon {
     font-size: 18px;
