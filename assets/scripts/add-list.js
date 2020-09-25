@@ -44,7 +44,9 @@ export function handleAddList(e) {
       const listItem = updateNewListItemWith({
         listItemCopy,
         list_id,
-        link,
+        link: window.__FAVE_RECIPE.newListItemLink
+          ? window.__FAVE_RECIPE.newListItemLink
+          : link, //add ability for other scripts to give default link for new collections
       });
       listItem.dataset.state = "idle";
       // this is for the recipe button
