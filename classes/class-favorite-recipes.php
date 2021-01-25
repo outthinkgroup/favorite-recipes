@@ -14,7 +14,7 @@ if(!class_exists( 'Favorite_Recipes' )) {
     
     public function enqueue_all(){
       //TODO seperate the styles and scripts that need only to apply to the management page, and what should be global
-      wp_enqueue_script('fr-global-scripts', FAVORITE_RECIPES_URL . 'dist/global.js', array(), true);
+      wp_enqueue_script('fr-global-scripts', FAVORITE_RECIPES_URL . 'dist/global.js?2', array(), true);
       wp_enqueue_style('fr-global-styles', FAVORITE_RECIPES_URL . 'dist/global.css', '1.00' , 'all');
       wp_localize_script( 'fr-global-scripts', 'WP', [
         'userId' => get_current_user_id(),
