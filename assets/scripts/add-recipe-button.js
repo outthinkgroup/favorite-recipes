@@ -63,5 +63,12 @@ function addRecipeToList({ recipeId, listId }) {
   return useApi("add-item", { item_id: parseInt(recipeId), list_id: listId });
 }
 
+function changeListPrivacyMode({ list_id, status, user_id }) {
+  return useApi("change-list-status", { list_id, status, user_id });
+}
 //adding to global window for theme authors to use
-window.__FAVE_RECIPE = { ...window.__FAVE_RECIPE, addRecipeToList };
+window.__FAVE_RECIPE = {
+  ...window.__FAVE_RECIPE,
+  addRecipeToList,
+  changeListPrivacyMode,
+};
