@@ -56,6 +56,11 @@ class List_Endpoints {
 			'callback' => 'List_Endpoints::delete_list',
 			'args'		=> []	
     ));
+    register_rest_route( 'recipe-list/v1', '/change-list-status', array(
+			'methods' => 'POST',
+			'callback' => 'List_Endpoints::change_list_status',
+			'args'		=> []	
+    ));
     register_rest_route( 'recipe-list/v1', '/remove-item', array(
 			'methods' => 'POST',
 			'callback' => 'List_Endpoints::remove_item',
@@ -119,14 +124,32 @@ class List_Endpoints {
     return $response;
   }
 
+  /**
+   * ? In json body
+   * - list_id: id of the list
+   * - status: string of new status ('private' | 'publish')
+   */
   static function change_list_status(){
     $data = List_Endpoints::get_json();
+    //TEST id = 9184
+    $new_status = $data->status;
+    $updated_collection = [
+      'ID'  => $data->list_id,
+      'post_status'=> $new_status
+    ];
 
-    //TODO pull new status out
-    //TODO update post status 
-    //TODO return results of above action
-
-    $response = new WP_REST_Response($data);
+    $result = wp_update_post( $updated_collection );
+    $returned_data = [];
+    if(!is_wp_error($result)){
+      $returned_data['data']['success'] = true;
+      $returned_data['data']['list_id'] = $result;
+      $returned_data['data']['status'] = get_post($result)->post_status;
+    }else{
+      $returned_data['error']['message'] = $result;
+    }
+    
+    
+    $response = new WP_REST_Response($returned_data);
     $response->set_status(200);
     return $response;
   }
