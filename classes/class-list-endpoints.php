@@ -74,7 +74,7 @@ class List_Endpoints {
 
  function create_list() {
     $data = List_Endpoints::get_json();
-    $status = $data->status ? $data->status && 'private';
+    $status = $data->status ? $data->status : 'private';
     $new_list_array = array(
         'post_title' => $data->title,
         'post_author' => $data->user_id,
