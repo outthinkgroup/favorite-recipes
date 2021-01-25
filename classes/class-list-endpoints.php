@@ -68,12 +68,17 @@ class List_Endpoints {
     ));
   }
 
+
+
+  // == CRUD METHODS FOR THE COLLECTIONS THEMSELVES == //
+
  function create_list() {
     $data = List_Endpoints::get_json();
+    $status = $data->status ? $data->status && 'private';
     $new_list_array = array(
         'post_title' => $data->title,
         'post_author' => $data->user_id,
-        'post_status' => 'publish',
+        'post_status' => $status,
         'post_content' => '',
         'post_type' => 'lists',
     );
@@ -89,6 +94,7 @@ class List_Endpoints {
       return $response;
     ///post_error_reporter($result);
   }
+
   static function rename_list(){
     $data = List_Endpoints::get_json();
     // Update post 37
@@ -112,6 +118,19 @@ class List_Endpoints {
     $response->set_status(200);
     return $response;
   }
+
+  static function change_list_status(){
+    $data = List_Endpoints::get_json();
+
+    //TODO pull new status out
+    //TODO update post status 
+    //TODO return results of above action
+
+    $response = new WP_REST_Response($data);
+    $response->set_status(200);
+    return $response;
+  }
+
   static function delete_list(){
     $data = List_Endpoints::get_json();
     $deleted_list = array(
@@ -137,6 +156,10 @@ class List_Endpoints {
     }
     
   }
+
+
+  // == ADDING AND REMOVING RECIPES FROM COLLECTIONS == //
+
   static function remove_item(){
     $data = List_Endpoints::get_json();
     $item_id = $data->item_id;
@@ -166,6 +189,8 @@ class List_Endpoints {
     // pluck array - need to search
     // save array.
   }
+
+
   static function add_item(){
     $data = List_Endpoints::get_json();
     $item_id = $data->item_id;
