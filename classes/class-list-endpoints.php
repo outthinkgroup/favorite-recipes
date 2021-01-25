@@ -128,26 +128,30 @@ class List_Endpoints {
    * ? In json body
    * - list_id: id of the list
    * - status: string of new status ('private' | 'publish')
+   * - user_id: current user's Id
    */
   static function change_list_status(){
     $data = List_Endpoints::get_json();
-    //TEST id = 9184
-    $new_status = $data->status;
-    $updated_collection = [
-      'ID'  => $data->list_id,
-      'post_status'=> $new_status
-    ];
-
-    $result = wp_update_post( $updated_collection );
     $returned_data = [];
-    if(!is_wp_error($result)){
-      $returned_data['data']['success'] = true;
-      $returned_data['data']['list_id'] = $result;
-      $returned_data['data']['status'] = get_post($result)->post_status;
+    //TEST id = 9184
+    if(List_Endpoints::list_belongs_to_user($data->list_id, $data->user_id)){
+      $new_status = $data->status;
+      $updated_collection = [
+        'ID'  => $data->list_id,
+        'post_status'=> $new_status
+      ];
+      $result = wp_update_post( $updated_collection );
+      if(!is_null($result) && !is_wp_error($result)){
+        $returned_data['data']['success'] = true;
+        $returned_data['data']['list_id'] = $result;
+        $returned_data['data']['status'] = get_post($result)->post_status;
+      }else{
+        $returned_data['error']['message'] = $result;
+      }
+
     }else{
-      $returned_data['error']['message'] = $result;
+      $returned_data['error']['message'] = 'you do not have permission to edit this list ';
     }
-    
     
     $response = new WP_REST_Response($returned_data);
     $response->set_status(200);
@@ -270,4 +274,13 @@ class List_Endpoints {
     return $data;
   }
   
+  static function list_belongs_to_user($id, $user_id){  
+    $list = get_post($id);
+    $list_author_id = $list->post_author;
+    if($list_author_id === $user_id){
+      return true;
+    } else{
+      return false;
+    }
+  }
 }
