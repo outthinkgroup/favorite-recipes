@@ -67,6 +67,10 @@ function changeListPrivacyMode({ list_id, status, user_id }) {
   return useApi("change-list-status", { list_id, status, user_id });
 }
 
+function renameList({ title, list_id }) {
+  return useApi("rename-list", { title, list_id });
+}
+
 function forkList({ list_id, user_id, list_title }) {
   return useApi("fork-list", { list_id, user_id, list_title });
 }
@@ -76,4 +80,5 @@ window.__FAVE_RECIPE = {
   addRecipeToList,
   changeListPrivacyMode,
   forkList,
+  renameList,
 };
