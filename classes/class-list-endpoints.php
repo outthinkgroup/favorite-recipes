@@ -61,6 +61,11 @@ class List_Endpoints {
 			'callback' => 'List_Endpoints::change_list_status',
 			'args'		=> []	
     ));
+    register_rest_route( 'recipe-list/v1', '/fork-list', array(
+			'methods' => 'POST',
+			'callback' => 'List_Endpoints::fork_list',
+			'args'		=> []	
+    ));
     register_rest_route( 'recipe-list/v1', '/remove-item', array(
 			'methods' => 'POST',
 			'callback' => 'List_Endpoints::remove_item',
@@ -185,6 +190,34 @@ class List_Endpoints {
   }
 
 
+  static function fork_list(){
+    $data = List_Endpoints::get_json();
+    $old_post_id = $data->list_id;
+    $user_id = $data->user_id;
+    $result = List_Endpoints::duplicate_list($old_post_id, $user_id);
+
+    if ( ! is_wp_error($result) ) {
+      $title = get_the_title($result);
+      $link = get_the_permalink($result);
+      
+      $return_data = array(
+        'data' => array(
+          'success' => true,
+          'title'=> $title,
+          'list_id'  => $result,
+          'link'    =>  $link,
+        )
+      );
+      $response = new WP_REST_Response($return_data);
+    
+    } else {
+      $response = new WP_REST_Response(['error'=> ['message'=> 'we had an unknown error']]);
+    }
+    $response->set_status(200);
+    return $response;
+  }
+
+
   // == ADDING AND REMOVING RECIPES FROM COLLECTIONS == //
 
   static function remove_item(){
@@ -282,5 +315,26 @@ class List_Endpoints {
     } else{
       return false;
     }
+  }
+
+  static function duplicate_list($post_id, $user_id) {
+    $title   = get_the_title($post_id);
+    $oldpost = get_post($post_id);
+    $post    = array(
+      'post_title' => $title,
+      'post_status' => 'publish',
+      'post_type' => $oldpost->post_type,
+      'post_author' => $user_id
+    );
+    $new_post_id = wp_insert_post($post);
+    // Copy post metadata
+    $data = get_post_custom($post_id);
+    foreach ( $data as $key => $values) {
+      foreach ($values as $value) {
+        add_post_meta( $new_post_id, $key, $value );
+      }
+    }
+
+    return $new_post_id;
   }
 }
