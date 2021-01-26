@@ -109,7 +109,7 @@ function show_list_title_and_count($list, $options=['edit'=>true, 'recipe_link'=
           </span>
           <?php endif; ?>
         
-        <?php if($options['edit']):?>
+        <?php if($options['edit'] && $list->post_author == wp_get_current_user()->ID):?>
           <button class="minimal icon-button" data-tooltip="Rename your list." data-action="rename-list"><span class="icon"><?php get_icon('edit'); ?></span></button>
         <?php endif; ?>
       </span>
