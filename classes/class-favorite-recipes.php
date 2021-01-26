@@ -54,8 +54,15 @@ if(!class_exists( 'Favorite_Recipes' )) {
       register_post_type( 'lists', $args );
       flush_rewrite_rules();
     }
+    function hide_private_lists($query){
+     if(get_post_type() === 'lists') {
+       $query->set('post_status', 'public');
+     }
+      return $query;
+    }
     function add_post_type(){
       add_action('init', array($this, 'register_recipe_list_post_type'));
+      add_action('pre_get_posts', array($this, 'hide_private_lists'));
     }
     function add_endpoints(){
       include_once FAVORITE_RECIPES_PATH . 'classes/class-list-endpoints.php';
