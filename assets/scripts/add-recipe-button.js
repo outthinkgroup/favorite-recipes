@@ -66,9 +66,14 @@ function addRecipeToList({ recipeId, listId }) {
 function changeListPrivacyMode({ list_id, status, user_id }) {
   return useApi("change-list-status", { list_id, status, user_id });
 }
+
+function forList({ list_id, user_id, list_title }) {
+  return useApi("fork-list", { list_id, user_id, list_title });
+}
 //adding to global window for theme authors to use
 window.__FAVE_RECIPE = {
   ...window.__FAVE_RECIPE,
   addRecipeToList,
   changeListPrivacyMode,
+  forList,
 };
