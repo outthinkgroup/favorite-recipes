@@ -1,12 +1,829 @@
-parcelRequire=function(e,r,t,n){var i,o="function"==typeof parcelRequire&&parcelRequire,u="function"==typeof require&&require;function f(t,n){if(!r[t]){if(!e[t]){var i="function"==typeof parcelRequire&&parcelRequire;if(!n&&i)return i(t,!0);if(o)return o(t,!0);if(u&&"string"==typeof t)return u(t);var c=new Error("Cannot find module '"+t+"'");throw c.code="MODULE_NOT_FOUND",c}p.resolve=function(r){return e[t][1][r]||r},p.cache={};var l=r[t]=new f.Module(t);e[t][0].call(l.exports,p,l,l.exports,this)}return r[t].exports;function p(e){return f(p.resolve(e))}}f.isParcelRequire=!0,f.Module=function(e){this.id=e,this.bundle=f,this.exports={}},f.modules=e,f.cache=r,f.parent=o,f.register=function(r,t){e[r]=[function(e,r){r.exports=t},{}]};for(var c=0;c<t.length;c++)try{f(t[c])}catch(e){i||(i=e)}if(t.length){var l=f(t[t.length-1]);"object"==typeof exports&&"undefined"!=typeof module?module.exports=l:"function"==typeof define&&define.amd?define(function(){return l}):n&&(this[n]=l)}if(parcelRequire=f,i)throw i;return f}({"w8i0":[function(require,module,exports) {
-"use strict";function e(e){return o(e)||r(e)||n(e)||t()}function t(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}function n(e,t){if(e){if("string"==typeof e)return i(e,t);var n=Object.prototype.toString.call(e).slice(8,-1);return"Object"===n&&e.constructor&&(n=e.constructor.name),"Map"===n||"Set"===n?Array.from(e):"Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)?i(e,t):void 0}}function r(e){if("undefined"!=typeof Symbol&&Symbol.iterator in Object(e))return Array.from(e)}function o(e){if(Array.isArray(e))return i(e)}function i(e,t){(null==t||t>e.length)&&(t=e.length);for(var n=0,r=new Array(t);n<t;n++)r[n]=e[n];return r}function a(e,t){var n=Object.keys(e);if(Object.getOwnPropertySymbols){var r=Object.getOwnPropertySymbols(e);t&&(r=r.filter(function(t){return Object.getOwnPropertyDescriptor(e,t).enumerable})),n.push.apply(n,r)}return n}function c(e){for(var t=1;t<arguments.length;t++){var n=null!=arguments[t]?arguments[t]:{};t%2?a(Object(n),!0).forEach(function(t){u(e,t,n[t])}):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(n)):a(Object(n)).forEach(function(t){Object.defineProperty(e,t,Object.getOwnPropertyDescriptor(n,t))})}return e}function u(e,t,n){return t in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e}Object.defineProperty(exports,"__esModule",{value:!0}),exports.replaceWithForm=p,exports.useApi=f,exports.getInputValue=d,exports.getInputValueByForm=m,exports.toggleOnOff=b,exports.getUserId=y,exports.updateAllListsWithNewList=g,exports.updateAllListsWithNewCount=O,exports.handleError=j;var s="/wp-json/recipe-list/v1",l={method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"}};function p(e){var t=e.element,n=e.callback,r=(e.formLabel,e.btnText),o=void 0===r?"submit":r,i=e.replaceParent,a=void 0!==i&&i,c=e.changeInnerTextOfEl,u=void 0===c?null:c,s=document.createElement("form");s.classList.add("generated-inline");var l=t.parentElement,p=u&&l.querySelector(u);function f(e){if(n(e,l),d(),u){var t=s.querySelector(".small-inline-input").value;p.innerText=t}}function d(){a?s.replaceWith(l):s.replaceWith(t),s.removeEventListener("submit",f)}s.addEventListener("submit",f),s.innerHTML='\n    <input type="text" class="small-inline-input" value="'.concat((u?p.innerHTML:"&nbsp;").trim(),'"/> \n    <button type="submit">').concat(o,"</button>\n    "),!1!==a&&a?l.replaceWith(s):t.replaceWith(s),s.elements[0].focus(),v(s.parentElement,d)}function f(e,t){var n=JSON.stringify(t);return fetch("".concat(s,"/").concat(e),c(c({},l),{},{body:n})).then(function(e){return e.json()})}function d(e){return document.querySelector(e).value}function m(t){return e(t.querySelectorAll("input")).reduce(function(e,t,n){var r=t.value,o=t.name;return o?e[o]=r:e["index".concat(n)]=r,e},{})}function b(e,t){var n=arguments.length>2&&void 0!==arguments[2]?arguments[2]:"click";e.addEventListener(n,function(e){var n=e.target.closest(t);n.dataset.state?delete n.dataset.state:n.dataset.state="on"}),"click"===n&&document.body.addEventListener(n,function(n){document.contains(n.target)&&!e.closest(t).contains(n.target)&&delete e.closest(t).dataset.state})}function y(){return WP.userId}function v(e,t){document.body.addEventListener("click",function(n){if(!e)return;document.contains(n.target)&&!e.contains(n.target)&&e!==n.target&&t()})}function g(e,t){h(function(n){var r=e.cloneNode(!0);t!==n&&n.prepend(r)})}function O(e){var t=e.itemId,n=e.newCount,r=e.parentList;h(function(e){r!==e&&(e.querySelector('[data-list-id="'.concat(t,'"] .count')).innerText=n)})}function h(t){e(document.querySelectorAll(".add-recipe-to-list")).forEach(function(e){var n=e.querySelector("ul");t(n)})}function j(e,t){e.message&&alert(e.message),t.dataset.state="error"}
-},{}],"KZXI":[function(require,module,exports) {
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.addCreateListHandler=l,exports.handleShowCreateListForm=s,exports.handleAddList=c;var e=require("./helpers");function t(e){return o(e)||i(e)||n(e)||r()}function r(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}function n(e,t){if(e){if("string"==typeof e)return a(e,t);var r=Object.prototype.toString.call(e).slice(8,-1);return"Object"===r&&e.constructor&&(r=e.constructor.name),"Map"===r||"Set"===r?Array.from(e):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?a(e,t):void 0}}function i(e){if("undefined"!=typeof Symbol&&Symbol.iterator in Object(e))return Array.from(e)}function o(e){if(Array.isArray(e))return a(e)}function a(e,t){(null==t||t>e.length)&&(t=e.length);for(var r=0,n=new Array(t);r<t;r++)n[r]=e[r];return n}function l(e){console.log("addCreateListHandler Ran",e);var t=e.querySelector("[data-action='show-create-list']");t.addEventListener("click",function(){return s(t)})}function s(t){var r=c;(0,e.replaceWithForm)({element:t,callback:r,btnText:"create",replaceParent:!1,waitTillResolve:!0})}function c(t){t.preventDefault();var r=(0,e.getInputValueByForm)(t.target).index0,n=(0,e.getUserId)(),i=t.target.closest(".lists, .add-recipe-to-list").querySelector("ul"),o=u(i,r);o.dataset.state="loading",f(r,n).then(function(t){if(t.error)(0,e.handleError)(t.error,o);else{var r=t.data,n=r.list_id,a=r.link,l=d({listItemCopy:o,list_id:n,link:window.__FAVE_RECIPE.newListItemLink?window.__FAVE_RECIPE.newListItemLink:a});l.dataset.state="idle",i.classList.contains("lists")&&(0,e.updateAllListsWithNewList)(l,i)}})}function u(e,t){var r=e.querySelector("li:last-child").cloneNode(!0);return r.querySelector(".recipe-title .title-el").innerText=t,e.prepend(r),r}function d(e){var r=e.listItemCopy,n=e.list_id,i=e.link;r.dataset.listId=n;var o=t(r.querySelectorAll("a"));return console.log(o),o.forEach(function(e){e.setAttribute("href",i),console.log(i.href)}),r}function f(t,r){var n={user_id:parseInt(r),title:t};return(0,e.useApi)("create-list",n)}
-},{"./helpers":"w8i0"}],"ExYO":[function(require,module,exports) {
-"use strict";var e=require("./helpers"),t=require("./add-list");function r(e,t){var r=Object.keys(e);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(e);t&&(n=n.filter(function(t){return Object.getOwnPropertyDescriptor(e,t).enumerable})),r.push.apply(r,n)}return r}function n(e){for(var t=1;t<arguments.length;t++){var n=null!=arguments[t]?arguments[t]:{};t%2?r(Object(n),!0).forEach(function(t){i(e,t,n[t])}):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(n)):r(Object(n)).forEach(function(t){Object.defineProperty(e,t,Object.getOwnPropertyDescriptor(n,t))})}return e}function i(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}function a(){document.querySelector(".recipe-list-management-area")&&(o(document.querySelector(".my-lists")),document.querySelectorAll(".lists-action").forEach(function(e){return(0,t.addCreateListHandler)(e)}))}function o(e){e.addEventListener("click",function(e){console.log("ran"),function(e){var t=e.target,r=t.dataset.action;if(!r)return;switch(console.log(r,t),r){case"delete-list":return void c(t);case"rename-list":l(t)}}(e)})}function c(t){var r=t.closest(".list-item"),n=r.dataset.listId,i=(0,e.getUserId)(),a=r.parentElement;r.dataset.state="hidden",s(n,i).then(function(e){e.error?handleError(e.error,r):a.contains(r)&&a.removeChild(r)})}function s(t,r){var n={list_id:parseInt(t),user_id:parseInt(r)};return(0,e.useApi)("delete-list",n)}function l(t){(0,e.replaceWithForm)({element:t,callback:d,btnText:"rename",replaceParent:!0,changeInnerTextOfEl:".recipe-title a"})}function d(t,r){t.preventDefault();var n=(0,e.getInputValueByForm)(t.target).index0,i=t.target.closest(".list-item"),a=i.dataset.listId;i.dataset.state="loading",(0,e.useApi)("rename-list",{title:n,list_id:a}).then(function(e){e.error?handleError(e.error,i):i.dataset.state="idle"})}function u(t){var r=t.recipeId,n=t.listId;return(0,e.useApi)("remove-item",{item_id:parseInt(r),list_id:parseInt(n)})}window.addEventListener("DOMContentLoaded",a),window.__FAVE_RECIPE=n(n({},window.__FAVE_RECIPE),{},{deleteRecipeFromList:u,deleteList:s});
-},{"./helpers":"w8i0","./add-list":"KZXI"}],"aj0D":[function(require,module,exports) {
+// modules are defined as an array
+// [ module function, map of requires ]
+//
+// map of requires is short require name -> numeric require
+//
+// anything defined in a previous bundle is accessed via the
+// orig method which is the require for previous bundles
+parcelRequire = (function (modules, cache, entry, globalName) {
+  // Save the require from previous bundle to this closure if any
+  var previousRequire = typeof parcelRequire === 'function' && parcelRequire;
+  var nodeRequire = typeof require === 'function' && require;
 
-},{}],"Cc5L":[function(require,module,exports) {
-"use strict";require("./scripts/account-page.js"),require("./styles/account-page.scss");
-},{"./scripts/account-page.js":"ExYO","./styles/account-page.scss":"aj0D"}]},{},["Cc5L"], null)
+  function newRequire(name, jumped) {
+    if (!cache[name]) {
+      if (!modules[name]) {
+        // if we cannot find the module within our internal map or
+        // cache jump to the current global require ie. the last bundle
+        // that was added to the page.
+        var currentRequire = typeof parcelRequire === 'function' && parcelRequire;
+        if (!jumped && currentRequire) {
+          return currentRequire(name, true);
+        }
+
+        // If there are other bundles on this page the require from the
+        // previous one is saved to 'previousRequire'. Repeat this as
+        // many times as there are bundles until the module is found or
+        // we exhaust the require chain.
+        if (previousRequire) {
+          return previousRequire(name, true);
+        }
+
+        // Try the node require function if it exists.
+        if (nodeRequire && typeof name === 'string') {
+          return nodeRequire(name);
+        }
+
+        var err = new Error('Cannot find module \'' + name + '\'');
+        err.code = 'MODULE_NOT_FOUND';
+        throw err;
+      }
+
+      localRequire.resolve = resolve;
+      localRequire.cache = {};
+
+      var module = cache[name] = new newRequire.Module(name);
+
+      modules[name][0].call(module.exports, localRequire, module, module.exports, this);
+    }
+
+    return cache[name].exports;
+
+    function localRequire(x){
+      return newRequire(localRequire.resolve(x));
+    }
+
+    function resolve(x){
+      return modules[name][1][x] || x;
+    }
+  }
+
+  function Module(moduleName) {
+    this.id = moduleName;
+    this.bundle = newRequire;
+    this.exports = {};
+  }
+
+  newRequire.isParcelRequire = true;
+  newRequire.Module = Module;
+  newRequire.modules = modules;
+  newRequire.cache = cache;
+  newRequire.parent = previousRequire;
+  newRequire.register = function (id, exports) {
+    modules[id] = [function (require, module) {
+      module.exports = exports;
+    }, {}];
+  };
+
+  var error;
+  for (var i = 0; i < entry.length; i++) {
+    try {
+      newRequire(entry[i]);
+    } catch (e) {
+      // Save first error but execute all entries
+      if (!error) {
+        error = e;
+      }
+    }
+  }
+
+  if (entry.length) {
+    // Expose entry point to Node, AMD or browser globals
+    // Based on https://github.com/ForbesLindesay/umd/blob/master/template.js
+    var mainExports = newRequire(entry[entry.length - 1]);
+
+    // CommonJS
+    if (typeof exports === "object" && typeof module !== "undefined") {
+      module.exports = mainExports;
+
+    // RequireJS
+    } else if (typeof define === "function" && define.amd) {
+     define(function () {
+       return mainExports;
+     });
+
+    // <script>
+    } else if (globalName) {
+      this[globalName] = mainExports;
+    }
+  }
+
+  // Override the current require with this new one
+  parcelRequire = newRequire;
+
+  if (error) {
+    // throw error from earlier, _after updating parcelRequire_
+    throw error;
+  }
+
+  return newRequire;
+})({"scripts/helpers.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.replaceWithForm = replaceWithForm;
+exports.useApi = useApi;
+exports.getInputValue = getInputValue;
+exports.getInputValueByForm = getInputValueByForm;
+exports.toggleOnOff = toggleOnOff;
+exports.getUserId = getUserId;
+exports.updateAllListsWithNewList = updateAllListsWithNewList;
+exports.updateAllListsWithNewCount = updateAllListsWithNewCount;
+exports.handleError = handleError;
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var BASE_URL = "/wp-json/recipe-list/v1";
+var OPTIONS = {
+  method: "POST",
+  credentials: "same-origin",
+  headers: {
+    "Content-Type": "application/json"
+  }
+};
+
+function replaceWithForm(_ref) {
+  var element = _ref.element,
+      callback = _ref.callback,
+      _ref$formLabel = _ref.formLabel,
+      formLabel = _ref$formLabel === void 0 ? null : _ref$formLabel,
+      _ref$btnText = _ref.btnText,
+      btnText = _ref$btnText === void 0 ? "submit" : _ref$btnText,
+      _ref$replaceParent = _ref.replaceParent,
+      replaceParent = _ref$replaceParent === void 0 ? false : _ref$replaceParent,
+      _ref$changeInnerTextO = _ref.changeInnerTextOfEl,
+      changeInnerTextOfEl = _ref$changeInnerTextO === void 0 ? null : _ref$changeInnerTextO;
+  var form = document.createElement("form");
+  form.classList.add("generated-inline");
+  var parent = element.parentElement;
+  var changingEl = changeInnerTextOfEl && parent.querySelector(changeInnerTextOfEl);
+  form.addEventListener("submit", handleSubmit);
+  form.innerHTML = "\n    <input type=\"text\" class=\"small-inline-input\" value=\"".concat((changeInnerTextOfEl ? changingEl.innerHTML : "&nbsp;").trim(), "\"/> \n    <button type=\"submit\">").concat(btnText, "</button>\n    ");
+
+  if (replaceParent === false || !replaceParent) {
+    element.replaceWith(form);
+  } else {
+    parent.replaceWith(form);
+  }
+
+  form.elements[0].focus();
+  clickOutside(form.parentElement, formReset);
+
+  function handleSubmit(e) {
+    callback(e, parent);
+    formReset();
+
+    if (changeInnerTextOfEl) {
+      var newVal = form.querySelector(".small-inline-input").value;
+      changingEl.innerText = newVal;
+    }
+  }
+
+  function formReset() {
+    if (!replaceParent) {
+      form.replaceWith(element);
+    } else {
+      form.replaceWith(parent);
+    }
+
+    form.removeEventListener("submit", handleSubmit);
+  }
+}
+
+function useApi(endpoint, data) {
+  var body = JSON.stringify(data);
+  return fetch("".concat(BASE_URL, "/").concat(endpoint), _objectSpread(_objectSpread({}, OPTIONS), {}, {
+    body: body
+  })).then(function (res) {
+    return res.json();
+  });
+}
+
+function getInputValue(selector) {
+  var el = document.querySelector(selector);
+  var value = el.value;
+  return value;
+}
+
+function getInputValueByForm(form) {
+  var inputs = _toConsumableArray(form.querySelectorAll("input"));
+
+  var values = inputs.reduce(function (valueObj, input, index) {
+    var value = input.value,
+        name = input.name;
+
+    if (name) {
+      valueObj[name] = value;
+    } else {
+      valueObj["index".concat(index)] = value;
+    }
+
+    return valueObj;
+  }, {});
+  return values;
+}
+
+function toggleOnOff(actionElement, parentElementSelector) {
+  var action = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "click";
+  actionElement.addEventListener(action, toggleState);
+
+  if (action === "click") {
+    document.body.addEventListener(action, toggleOff);
+  }
+
+  function toggleState(e) {
+    var parentEl = e.target.closest(parentElementSelector);
+    var on = parentEl.dataset.state;
+
+    if (on) {
+      delete parentEl.dataset.state;
+    } else {
+      parentEl.dataset.state = "on";
+    }
+  }
+
+  function toggleOff(e) {
+    if (document.contains(e.target) && !actionElement.closest(parentElementSelector).contains(e.target)) {
+      delete actionElement.closest(parentElementSelector).dataset.state;
+    }
+  }
+}
+
+function getUserId() {
+  return WP.userId;
+}
+
+function clickOutside(element, callback) {
+  document.body.addEventListener("click", runCallBack);
+
+  function runCallBack(e) {
+    if (!element) return;
+
+    if (document.contains(e.target) && !element.contains(e.target) && element !== e.target) {
+      callback();
+    }
+  }
+}
+
+function updateAllListsWithNewList(newListItem, parentList) {
+  updateAllListsWith(function (list) {
+    var clone = newListItem.cloneNode(true);
+    if (parentList === list) return;
+    list.prepend(clone);
+  });
+}
+
+function updateAllListsWithNewCount(_ref2) {
+  var itemId = _ref2.itemId,
+      newCount = _ref2.newCount,
+      parentList = _ref2.parentList;
+  updateAllListsWith(function (list) {
+    if (parentList === list) return;
+    var countToUpdate = list.querySelector("[data-list-id=\"".concat(itemId, "\"] .count"));
+    countToUpdate.innerText = newCount;
+  });
+}
+
+function updateAllListsWith(callback) {
+  _toConsumableArray(document.querySelectorAll(".add-recipe-to-list")).forEach(function (parentEl) {
+    var list = parentEl.querySelector("ul");
+    callback(list);
+  });
+}
+
+function handleError(err, item) {
+  if (err.message) {
+    alert(err.message);
+  }
+
+  item.dataset.state = "error";
+}
+},{}],"scripts/add-list.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.addCreateListHandler = addCreateListHandler;
+exports.handleShowCreateListForm = handleShowCreateListForm;
+exports.handleAddList = handleAddList;
+
+var _helpers = require("./helpers");
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function addCreateListHandler(parent) {
+  console.log("addCreateListHandler Ran", parent);
+  var showFormBtn = parent.querySelector("[data-action='show-create-list']");
+  showFormBtn.addEventListener("click", function () {
+    return handleShowCreateListForm(showFormBtn);
+  });
+}
+
+function handleShowCreateListForm(element) {
+  var callback = handleAddList;
+  var btnText = "create";
+  (0, _helpers.replaceWithForm)({
+    element: element,
+    callback: callback,
+    btnText: btnText,
+    replaceParent: false,
+    waitTillResolve: true
+  });
+} //ADD LIST
+
+
+function handleAddList(e) {
+  e.preventDefault();
+
+  var _getInputValueByForm = (0, _helpers.getInputValueByForm)(e.target),
+      listName = _getInputValueByForm.index0;
+
+  var userId = (0, _helpers.getUserId)();
+  var listParent = e.target.closest(".lists, .add-recipe-to-list").querySelector("ul");
+  var listItemCopy = createNewListItem(listParent, listName);
+  listItemCopy.dataset.state = "loading";
+  addList(listName, userId).then(function (res) {
+    if (res.error) {
+      (0, _helpers.handleError)(res.error, listItemCopy);
+    } else {
+      var _res$data = res.data,
+          list_id = _res$data.list_id,
+          link = _res$data.link;
+      var listItem = updateNewListItemWith({
+        listItemCopy: listItemCopy,
+        list_id: list_id,
+        link: window.__FAVE_RECIPE.newListItemLink ? window.__FAVE_RECIPE.newListItemLink : link //add ability for other scripts to give default link for new collections
+
+      });
+      listItem.dataset.state = "idle"; // this is for the recipe button
+
+      if (listParent.classList.contains("lists")) {
+        (0, _helpers.updateAllListsWithNewList)(listItem, listParent);
+      }
+    }
+  });
+}
+
+function createNewListItem(listParent, listName) {
+  var listItemCopy = listParent.querySelector("li:last-child").cloneNode(true);
+  listItemCopy.querySelector(".recipe-title .title-el").innerText = listName;
+  listParent.prepend(listItemCopy);
+  return listItemCopy;
+}
+
+function updateNewListItemWith(_ref) {
+  var listItemCopy = _ref.listItemCopy,
+      list_id = _ref.list_id,
+      link = _ref.link;
+  listItemCopy.dataset.listId = list_id;
+
+  var allLinks = _toConsumableArray(listItemCopy.querySelectorAll("a"));
+
+  console.log(allLinks);
+  allLinks.forEach(function (anchorEl) {
+    anchorEl.setAttribute("href", link);
+    console.log(link.href);
+  });
+  return listItemCopy;
+}
+
+function addList(listName, userId) {
+  var data = {
+    user_id: parseInt(userId),
+    title: listName
+  };
+  return (0, _helpers.useApi)("create-list", data);
+}
+},{"./helpers":"scripts/helpers.js"}],"scripts/account-page.js":[function(require,module,exports) {
+"use strict";
+
+var _helpers = require("./helpers");
+
+var _addList = require("./add-list");
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+window.addEventListener("DOMContentLoaded", initManagement);
+
+function initManagement() {
+  if (!document.querySelector(".recipe-list-management-area")) return;
+  var list = document.querySelector(".my-lists");
+  addListItemActionHandlers(list);
+  document.querySelectorAll(".lists-action").forEach(function (listBottom) {
+    return (0, _addList.addCreateListHandler)(listBottom);
+  });
+} //HANDLERS AND API CALLS
+
+
+function addListItemActionHandlers(lists) {
+  lists.addEventListener("click", function (e) {
+    console.log("ran");
+    executeListItemAction(e);
+  });
+
+  function executeListItemAction(e) {
+    var item = e.target;
+    var action = item.dataset.action;
+    if (!action) return;
+    console.log(action, item);
+
+    switch (action) {
+      case "delete-list":
+        handleDeleteList(item);
+        return;
+
+      case "rename-list":
+        handleRenameListBtnClick(item);
+        return;
+    }
+  }
+} //DELETE LIST
+
+
+function handleDeleteList(element) {
+  var list = element.closest(".list-item");
+  var listId = list.dataset.listId;
+  var userId = (0, _helpers.getUserId)();
+  var parentElement = list.parentElement;
+  list.dataset.state = "hidden";
+  deleteList(listId, userId).then(function (res) {
+    if (res.error) {
+      handleError(res.error, list);
+    } else {
+      if (parentElement.contains(list)) {
+        parentElement.removeChild(list);
+      }
+    }
+  });
+}
+
+function deleteList(listId, userId) {
+  var data = {
+    list_id: parseInt(listId),
+    user_id: parseInt(userId)
+  };
+  return (0, _helpers.useApi)("delete-list", data);
+} //RENAME LIST
+
+
+function handleRenameListBtnClick(element) {
+  (0, _helpers.replaceWithForm)({
+    element: element,
+    callback: handleRenameRecipe,
+    btnText: "rename",
+    replaceParent: true,
+    changeInnerTextOfEl: ".recipe-title a"
+  });
+}
+
+function handleRenameRecipe(e, parent) {
+  e.preventDefault();
+
+  var _getInputValueByForm = (0, _helpers.getInputValueByForm)(e.target),
+      title = _getInputValueByForm.index0;
+
+  var list = e.target.closest(".list-item");
+  var list_id = list.dataset.listId;
+  list.dataset.state = "loading";
+  (0, _helpers.useApi)("rename-list", {
+    title: title,
+    list_id: list_id
+  }).then(function (res) {
+    if (res.error) {
+      handleError(res.error, list);
+    } else {
+      list.dataset.state = "idle";
+    }
+  });
+}
+
+window.__FAVE_RECIPE = _objectSpread(_objectSpread({}, window.__FAVE_RECIPE), {}, {
+  deleteRecipeFromList: deleteRecipeFromList,
+  deleteList: deleteList
+});
+
+function deleteRecipeFromList(_ref) {
+  var recipeId = _ref.recipeId,
+      listId = _ref.listId;
+  return (0, _helpers.useApi)("remove-item", {
+    item_id: parseInt(recipeId),
+    list_id: parseInt(listId)
+  });
+}
+},{"./helpers":"scripts/helpers.js","./add-list":"scripts/add-list.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
+
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
+
+  return bundleURL;
+}
+
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"../node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    link.remove();
+  };
+
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+module.exports = reloadCSS;
+},{"./bundle-url":"../node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"styles/account-page.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"account-page.js":[function(require,module,exports) {
+"use strict";
+
+require("./scripts/account-page.js");
+
+require("./styles/account-page.scss");
+},{"./scripts/account-page.js":"scripts/account-page.js","./styles/account-page.scss":"styles/account-page.scss"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var global = arguments[3];
+var OVERLAY_ID = '__parcel__error__overlay__';
+var OldModule = module.bundle.Module;
+
+function Module(moduleName) {
+  OldModule.call(this, moduleName);
+  this.hot = {
+    data: module.bundle.hotData,
+    _acceptCallbacks: [],
+    _disposeCallbacks: [],
+    accept: function (fn) {
+      this._acceptCallbacks.push(fn || function () {});
+    },
+    dispose: function (fn) {
+      this._disposeCallbacks.push(fn);
+    }
+  };
+  module.bundle.hotData = null;
+}
+
+module.bundle.Module = Module;
+var checkedAssets, assetsToAccept;
+var parent = module.bundle.parent;
+
+if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
+  var hostname = "" || location.hostname;
+  var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53803" + '/');
+
+  ws.onmessage = function (event) {
+    checkedAssets = {};
+    assetsToAccept = [];
+    var data = JSON.parse(event.data);
+
+    if (data.type === 'update') {
+      var handled = false;
+      data.assets.forEach(function (asset) {
+        if (!asset.isNew) {
+          var didAccept = hmrAcceptCheck(global.parcelRequire, asset.id);
+
+          if (didAccept) {
+            handled = true;
+          }
+        }
+      }); // Enable HMR for CSS by default.
+
+      handled = handled || data.assets.every(function (asset) {
+        return asset.type === 'css' && asset.generated.js;
+      });
+
+      if (handled) {
+        console.clear();
+        data.assets.forEach(function (asset) {
+          hmrApply(global.parcelRequire, asset);
+        });
+        assetsToAccept.forEach(function (v) {
+          hmrAcceptRun(v[0], v[1]);
+        });
+      } else if (location.reload) {
+        // `location` global exists in a web worker context but lacks `.reload()` function.
+        location.reload();
+      }
+    }
+
+    if (data.type === 'reload') {
+      ws.close();
+
+      ws.onclose = function () {
+        location.reload();
+      };
+    }
+
+    if (data.type === 'error-resolved') {
+      console.log('[parcel] ✨ Error resolved');
+      removeErrorOverlay();
+    }
+
+    if (data.type === 'error') {
+      console.error('[parcel] 🚨  ' + data.error.message + '\n' + data.error.stack);
+      removeErrorOverlay();
+      var overlay = createErrorOverlay(data);
+      document.body.appendChild(overlay);
+    }
+  };
+}
+
+function removeErrorOverlay() {
+  var overlay = document.getElementById(OVERLAY_ID);
+
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
+function createErrorOverlay(data) {
+  var overlay = document.createElement('div');
+  overlay.id = OVERLAY_ID; // html encode message and stack trace
+
+  var message = document.createElement('div');
+  var stackTrace = document.createElement('pre');
+  message.innerText = data.error.message;
+  stackTrace.innerText = data.error.stack;
+  overlay.innerHTML = '<div style="background: black; font-size: 16px; color: white; position: fixed; height: 100%; width: 100%; top: 0px; left: 0px; padding: 30px; opacity: 0.85; font-family: Menlo, Consolas, monospace; z-index: 9999;">' + '<span style="background: red; padding: 2px 4px; border-radius: 2px;">ERROR</span>' + '<span style="top: 2px; margin-left: 5px; position: relative;">🚨</span>' + '<div style="font-size: 18px; font-weight: bold; margin-top: 20px;">' + message.innerHTML + '</div>' + '<pre>' + stackTrace.innerHTML + '</pre>' + '</div>';
+  return overlay;
+}
+
+function getParents(bundle, id) {
+  var modules = bundle.modules;
+
+  if (!modules) {
+    return [];
+  }
+
+  var parents = [];
+  var k, d, dep;
+
+  for (k in modules) {
+    for (d in modules[k][1]) {
+      dep = modules[k][1][d];
+
+      if (dep === id || Array.isArray(dep) && dep[dep.length - 1] === id) {
+        parents.push(k);
+      }
+    }
+  }
+
+  if (bundle.parent) {
+    parents = parents.concat(getParents(bundle.parent, id));
+  }
+
+  return parents;
+}
+
+function hmrApply(bundle, asset) {
+  var modules = bundle.modules;
+
+  if (!modules) {
+    return;
+  }
+
+  if (modules[asset.id] || !bundle.parent) {
+    var fn = new Function('require', 'module', 'exports', asset.generated.js);
+    asset.isNew = !modules[asset.id];
+    modules[asset.id] = [fn, asset.deps];
+  } else if (bundle.parent) {
+    hmrApply(bundle.parent, asset);
+  }
+}
+
+function hmrAcceptCheck(bundle, id) {
+  var modules = bundle.modules;
+
+  if (!modules) {
+    return;
+  }
+
+  if (!modules[id] && bundle.parent) {
+    return hmrAcceptCheck(bundle.parent, id);
+  }
+
+  if (checkedAssets[id]) {
+    return;
+  }
+
+  checkedAssets[id] = true;
+  var cached = bundle.cache[id];
+  assetsToAccept.push([bundle, id]);
+
+  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
+    return true;
+  }
+
+  return getParents(global.parcelRequire, id).some(function (id) {
+    return hmrAcceptCheck(global.parcelRequire, id);
+  });
+}
+
+function hmrAcceptRun(bundle, id) {
+  var cached = bundle.cache[id];
+  bundle.hotData = {};
+
+  if (cached) {
+    cached.hot.data = bundle.hotData;
+  }
+
+  if (cached && cached.hot && cached.hot._disposeCallbacks.length) {
+    cached.hot._disposeCallbacks.forEach(function (cb) {
+      cb(bundle.hotData);
+    });
+  }
+
+  delete bundle.cache[id];
+  bundle(id);
+  cached = bundle.cache[id];
+
+  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
+    cached.hot._acceptCallbacks.forEach(function (cb) {
+      cb();
+    });
+
+    return true;
+  }
+}
+},{}]},{},["../node_modules/parcel-bundler/src/builtins/hmr-runtime.js","account-page.js"], null)
 //# sourceMappingURL=/account-page.js.map

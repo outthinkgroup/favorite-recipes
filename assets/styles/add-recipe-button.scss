@@ -33,15 +33,16 @@
     display: none;
     z-index: 99;
     border-radius: 3px;
+    max-height: 220px;
+    overflow: hidden;
+    overflow-y: scroll;
   }
   .lists {
     margin: 0;
     padding: 0;
     list-style: none;
     font-size: 14px;
-    overflow: hidden;
-    overflow-y: scroll;
-    max-height: 220px;
+
     li {
       @extend %states;
     }
