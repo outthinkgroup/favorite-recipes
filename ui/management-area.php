@@ -59,6 +59,7 @@ function show_list_item( $list=null ){
   ?>
   <li 
     class="list-item"
+    data-test="<?php if($list) echo $list->post_status; ?>"
     data-list-id="<?php if($list) echo $list->ID; ?>"
     data-state="<?php echo $list_state; ?>"
   >

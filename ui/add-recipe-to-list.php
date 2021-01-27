@@ -23,10 +23,14 @@ function add_recipe_button($iconButton=false, $post_id=null){
         <?php
       if (!empty($lists)) { 
         foreach($lists as $list){
+          if($list->post_status !== "trash"){
+
+          
           ?>
           <li 
             data-state="idle" 
             data-list-id="<?php echo $list->ID; ?>" 
+            data-test="<?php echo $list->post_status;?>"
             <?php if(is_recipe_in_list($post_id, $list->ID)) echo "data-in-list='true'";?>
           >
             <button data-action="add-recipe" class="button-minimal  icon-button with-text" style="--button-alignment:space-between" <?php if(is_recipe_in_list($post_id, $list->ID)) echo "disabled=true";?>>
@@ -34,7 +38,8 @@ function add_recipe_button($iconButton=false, $post_id=null){
               <span class="icon"><?php get_icon('plus', 'solid'); ?></span>
             </button>
           </li>
-          <?php } ?>
+          <?php } 
+          } ?>
         <?php } ?>
           <li data-state="hidden" data-list-id="" >
             <button  data-action="add-recipe" class="button-minimal icon-button with-text" style="--button-alignment:space-between">
