@@ -23,9 +23,8 @@ function add_recipe_button($iconButton=false, $post_id=null){
         <?php
       if (!empty($lists)) { 
         foreach($lists as $list){
+          //! BUG: on collection singles this some times pulls in lists in trash
           if($list->post_status !== "trash"){
-
-          
           ?>
           <li 
             data-state="idle" 
