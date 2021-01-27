@@ -47,7 +47,8 @@ function get_user_lists($user_id){
   $listArgs = array(
     'post_type' => 'lists',
     'author' => $user_id,
-    'posts_per_page' => '-1'
+    'posts_per_page' => '-1',
+    'post_status' => ['publish', 'private']
   );
   $lists = get_posts($listArgs);
   return $lists;
