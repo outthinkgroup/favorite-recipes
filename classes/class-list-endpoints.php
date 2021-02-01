@@ -27,7 +27,6 @@ delete_list
     Deletes entire list
 
 == Recipe Browsing Functions:
-
 remove_item
     removes an item from the list
 
@@ -328,13 +327,9 @@ class List_Endpoints {
     );
     $new_post_id = wp_insert_post($post);
     // Copy post metadata
-    $data = get_post_custom($post_id);
-    foreach ( $data as $key => $values) {
-      foreach ($values as $value) {
-        add_post_meta( $new_post_id, $key, $value );
-      }
-    }
-
+    $data = get_list_items($post_id);
+    
+    add_post_meta($new_post_id, 'list_items', $data);
     return $new_post_id;
   }
 }
