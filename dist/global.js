@@ -488,17 +488,23 @@ function perMainComponentDo(component) {
 function handleAddRecipeToList(listItem, component) {
   listItem.dataset.state = "loading";
   var countEl = listItem.querySelector(".count");
+  var buttonEl = listItem.querySelector("button");
   var newCount = parseInt(countEl.innerText) + 1;
   countEl.innerText = newCount;
   var data = {
     recipeId: component.dataset.recipeId,
     listId: listItem.dataset.listId
   };
+  buttonEl.disabled = true;
   addRecipeToList(data).then(function (res) {
     if (res.error) {
+      buttonEl.disabled = false;
       (0, _helpers.handleError)(res.error, listItem);
     } else {
       listItem.dataset.state = "idle";
+      buttonEl.disabled = true; //stops users from adding it again
+
+      listItem.dataset.inList = true;
       (0, _helpers.updateAllListsWithNewCount)({
         itemId: data.listId,
         newCount: newCount,

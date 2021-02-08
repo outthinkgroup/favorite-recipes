@@ -4,8 +4,11 @@ import {
   updateAllListsWithNewCount,
   handleError,
 } from "./helpers";
+
 import { handleShowCreateListForm } from "./add-list";
+
 window.addEventListener("DOMContentLoaded", addRecipeToListButtonInit);
+
 function addRecipeToListButtonInit() {
   const mainComponents = [...document.querySelectorAll(".add-recipe-to-list")];
   mainComponents.forEach((component) => perMainComponentDo(component));
@@ -39,17 +42,22 @@ function perMainComponentDo(component) {
 function handleAddRecipeToList(listItem, component) {
   listItem.dataset.state = "loading";
   const countEl = listItem.querySelector(".count");
+  const buttonEl = listItem.querySelector("button");
   const newCount = parseInt(countEl.innerText) + 1;
   countEl.innerText = newCount;
   const data = {
     recipeId: component.dataset.recipeId,
     listId: listItem.dataset.listId,
   };
+  buttonEl.disabled = true;
   addRecipeToList(data).then((res) => {
     if (res.error) {
+      buttonEl.disabled = false;
       handleError(res.error, listItem);
     } else {
       listItem.dataset.state = "idle";
+      buttonEl.disabled = true; //stops users from adding it again
+      listItem.dataset.inList = true;
       updateAllListsWithNewCount({
         itemId: data.listId,
         newCount,
