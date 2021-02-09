@@ -14,7 +14,7 @@ if(!class_exists( 'Favorite_Recipes' )) {
     
     public function enqueue_all(){
       //TODO seperate the styles and scripts that need only to apply to the management page, and what should be global
-      wp_enqueue_script('fr-global-scripts', FAVORITE_RECIPES_URL . 'dist/global.js', array(), true);
+      wp_enqueue_script('fr-global-scripts', FAVORITE_RECIPES_URL . 'dist/global.js?2', array(), true);
       wp_enqueue_style('fr-global-styles', FAVORITE_RECIPES_URL . 'dist/global.css', '1.00' , 'all');
       wp_localize_script( 'fr-global-scripts', 'WP', [
         'userId' => get_current_user_id(),
@@ -54,8 +54,15 @@ if(!class_exists( 'Favorite_Recipes' )) {
       register_post_type( 'lists', $args );
       flush_rewrite_rules();
     }
+    function hide_private_lists($query){
+     if(get_post_type() === 'lists') {
+       $query->set('post_status', 'public');
+     }
+      return $query;
+    }
     function add_post_type(){
       add_action('init', array($this, 'register_recipe_list_post_type'));
+      add_action('pre_get_posts', array($this, 'hide_private_lists'));
     }
     function add_endpoints(){
       include_once FAVORITE_RECIPES_PATH . 'classes/class-list-endpoints.php';

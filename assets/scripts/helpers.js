@@ -25,7 +25,7 @@ export function replaceWithForm({
 
   form.innerHTML = `
     <input type="text" class="small-inline-input" value="${(changeInnerTextOfEl
-      ? changingEl.innerHTML
+      ? changingEl.textContent
       : "&nbsp;"
     ).trim()}"/> 
     <button type="submit">${btnText}</button>

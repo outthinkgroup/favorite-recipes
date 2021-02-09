@@ -27,7 +27,6 @@ delete_list
     Deletes entire list
 
 == Recipe Browsing Functions:
-
 remove_item
     removes an item from the list
 
@@ -56,6 +55,16 @@ class List_Endpoints {
 			'callback' => 'List_Endpoints::delete_list',
 			'args'		=> []	
     ));
+    register_rest_route( 'recipe-list/v1', '/change-list-status', array(
+			'methods' => 'POST',
+			'callback' => 'List_Endpoints::change_list_status',
+			'args'		=> []	
+    ));
+    register_rest_route( 'recipe-list/v1', '/fork-list', array(
+			'methods' => 'POST',
+			'callback' => 'List_Endpoints::fork_list',
+			'args'		=> []	
+    ));
     register_rest_route( 'recipe-list/v1', '/remove-item', array(
 			'methods' => 'POST',
 			'callback' => 'List_Endpoints::remove_item',
@@ -68,12 +77,17 @@ class List_Endpoints {
     ));
   }
 
+
+
+  // == CRUD METHODS FOR THE COLLECTIONS THEMSELVES == //
+
  function create_list() {
     $data = List_Endpoints::get_json();
+    $status = $data->status ? $data->status : 'private';
     $new_list_array = array(
         'post_title' => $data->title,
         'post_author' => $data->user_id,
-        'post_status' => 'publish',
+        'post_status' => $status,
         'post_content' => '',
         'post_type' => 'lists',
     );
@@ -89,6 +103,7 @@ class List_Endpoints {
       return $response;
     ///post_error_reporter($result);
   }
+
   static function rename_list(){
     $data = List_Endpoints::get_json();
     // Update post 37
@@ -112,6 +127,41 @@ class List_Endpoints {
     $response->set_status(200);
     return $response;
   }
+
+  /**
+   * ? In json body
+   * - list_id: id of the list
+   * - status: string of new status ('private' | 'publish')
+   * - user_id: current user's Id
+   */
+  static function change_list_status(){
+    $data = List_Endpoints::get_json();
+    $returned_data = [];
+    //TEST id = 9184
+    if(List_Endpoints::list_belongs_to_user($data->list_id, $data->user_id)){
+      $new_status = $data->status;
+      $updated_collection = [
+        'ID'  => $data->list_id,
+        'post_status'=> $new_status
+      ];
+      $result = wp_update_post( $updated_collection );
+      if(!is_null($result) && !is_wp_error($result)){
+        $returned_data['data']['success'] = true;
+        $returned_data['data']['list_id'] = $result;
+        $returned_data['data']['status'] = get_post($result)->post_status;
+      }else{
+        $returned_data['error']['message'] = $result;
+      }
+
+    }else{
+      $returned_data['error']['message'] = 'you do not have permission to edit this list ';
+    }
+    
+    $response = new WP_REST_Response($returned_data);
+    $response->set_status(200);
+    return $response;
+  }
+
   static function delete_list(){
     $data = List_Endpoints::get_json();
     $deleted_list = array(
@@ -137,6 +187,38 @@ class List_Endpoints {
     }
     
   }
+
+
+  static function fork_list(){
+    $data = List_Endpoints::get_json();
+    $old_post_id = $data->list_id;
+    $user_id = $data->user_id;
+    $result = List_Endpoints::duplicate_list($old_post_id, $user_id);
+
+    if ( ! is_wp_error($result) ) {
+      $title = get_the_title($result);
+      $link = get_the_permalink($result);
+      
+      $return_data = array(
+        'data' => array(
+          'success' => true,
+          'title'=> $title,
+          'list_id'  => $result,
+          'link'    =>  $link,
+        )
+      );
+      $response = new WP_REST_Response($return_data);
+    
+    } else {
+      $response = new WP_REST_Response(['error'=> ['message'=> 'we had an unknown error']]);
+    }
+    $response->set_status(200);
+    return $response;
+  }
+
+
+  // == ADDING AND REMOVING RECIPES FROM COLLECTIONS == //
+
   static function remove_item(){
     $data = List_Endpoints::get_json();
     $item_id = $data->item_id;
@@ -166,6 +248,8 @@ class List_Endpoints {
     // pluck array - need to search
     // save array.
   }
+
+
   static function add_item(){
     $data = List_Endpoints::get_json();
     $item_id = $data->item_id;
@@ -222,4 +306,30 @@ class List_Endpoints {
     return $data;
   }
   
+  static function list_belongs_to_user($id, $user_id){  
+    $list = get_post($id);
+    $list_author_id = $list->post_author;
+    if($list_author_id === $user_id){
+      return true;
+    } else{
+      return false;
+    }
+  }
+
+  static function duplicate_list($post_id, $user_id) {
+    $title   = get_the_title($post_id);
+    $oldpost = get_post($post_id);
+    $post    = array(
+      'post_title' => $title,
+      'post_status' => 'publish',
+      'post_type' => $oldpost->post_type,
+      'post_author' => $user_id
+    );
+    $new_post_id = wp_insert_post($post);
+    // Copy post metadata
+    $data = get_list_items($post_id);
+    
+    add_post_meta($new_post_id, 'list_items', $data);
+    return $new_post_id;
+  }
 }

@@ -47,7 +47,8 @@ function get_user_lists($user_id){
   $listArgs = array(
     'post_type' => 'lists',
     'author' => $user_id,
-    'posts_per_page' => '-1'
+    'posts_per_page' => '-1',
+    'post_status' => ['publish', 'private']
   );
   $lists = get_posts($listArgs);
   return $lists;
@@ -58,6 +59,7 @@ function show_list_item( $list=null ){
   ?>
   <li 
     class="list-item"
+    data-test="<?php if($list) echo $list->post_status; ?>"
     data-list-id="<?php if($list) echo $list->ID; ?>"
     data-state="<?php echo $list_state; ?>"
   >
@@ -109,7 +111,7 @@ function show_list_title_and_count($list, $options=['edit'=>true, 'recipe_link'=
           </span>
           <?php endif; ?>
         
-        <?php if($options['edit']):?>
+        <?php if($options['edit'] && $list->post_author == wp_get_current_user()->ID):?>
           <button class="minimal icon-button" data-tooltip="Rename your list." data-action="rename-list"><span class="icon"><?php get_icon('edit'); ?></span></button>
         <?php endif; ?>
       </span>
